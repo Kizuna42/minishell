@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/24 18:30:45 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/24 18:47:02 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,12 +31,14 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/executor/executor.c \
 		$(SRCDIR)/executor/builtin.c \
 		$(SRCDIR)/executor/builtin_commands.c \
+		$(SRCDIR)/executor/builtin_extra.c \
 		$(SRCDIR)/executor/redirections.c \
 		$(SRCDIR)/executor/pipes.c \
 		$(SRCDIR)/utils/utils.c \
 		$(SRCDIR)/utils/env_utils.c \
 		$(SRCDIR)/utils/signal_utils.c \
-		$(SRCDIR)/utils/cleanup.c
+		$(SRCDIR)/utils/cleanup.c \
+		$(SRCDIR)/utils/expand.c
 
 # Bonus source files
 BONUS_SRCS = $(SRCDIR)/bonus/logical_ops.c \
