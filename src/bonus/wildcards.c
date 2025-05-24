@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:49:58 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 18:54:15 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,22 @@ static int	match_pattern(char *str, char *pattern)
 	return (0);
 }
 
+static void	process_directory_entry(struct dirent *entry, char *pattern,
+	char **result, int *count)
+{
+	if (entry->d_name[0] != '.' && match_pattern(entry->d_name, pattern))
+	{
+		result[*count] = ft_strdup(entry->d_name);
+		(*count)++;
+	}
+}
+
 char	**expand_wildcards(char *pattern)
 {
 	DIR				*dir;
 	struct dirent	*entry;
 	char			**result;
 	int				count;
-	int				i;
 
 	dir = opendir(".");
 	if (!dir)
@@ -55,11 +64,7 @@ char	**expand_wildcards(char *pattern)
 	entry = readdir(dir);
 	while (entry != NULL)
 	{
-		if (entry->d_name[0] != '.' && match_pattern(entry->d_name, pattern))
-		{
-			result[count] = ft_strdup(entry->d_name);
-			count++;
-		}
+		process_directory_entry(entry, pattern, result, &count);
 		entry = readdir(dir);
 	}
 	closedir(dir);
