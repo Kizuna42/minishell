@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:45:02 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 20:02:39 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,8 @@ void			handle_signals(void);
 void			setup_signal_handlers(void);
 void			cleanup_minishell(t_minishell *shell);
 int				is_whitespace(char c);
+int				is_valid_identifier(char *str);
+int				process_export_arg(char *arg, t_minishell *shell);
 char			*ft_strtok(char *str, const char *delim);
 void			restore_std_fds(t_minishell *shell);
 int				handle_readline_input(t_minishell *shell, char *input);

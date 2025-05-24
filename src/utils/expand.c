@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:55:25 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 19:59:39 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ static char	*get_var_name(char *str, int *i)
 		(*i)++;
 		return (ft_strdup("?"));
 	}
+	if (!ft_isalnum(str[*i]) && str[*i] != '_')
+		return (NULL);
 	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
 	return (ft_substr(str, start, *i - start));
@@ -58,6 +60,11 @@ static void	process_variable(char **result, int *i, t_minishell *shell)
 	dollar_pos = *i;
 	(*i)++;
 	var_name = get_var_name(*result, i);
+	if (!var_name)
+	{
+		*i = dollar_pos + 1;
+		return ;
+	}
 	var_value = get_env_value(var_name, shell);
 	*result = replace_var(*result, var_name, var_value, dollar_pos);
 	free(var_name);

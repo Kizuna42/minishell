@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:37:24 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 20:03:51 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,26 +92,18 @@ int	builtin_env(t_minishell *shell)
 
 int	builtin_export(char **args, t_minishell *shell)
 {
-	char	*equal_pos;
-	char	*key;
-	char	*value;
-	int		i;
+	int	i;
+	int	exit_status;
 
 	if (!args[1])
 		return (builtin_env(shell));
 	i = 1;
+	exit_status = 0;
 	while (args[i])
 	{
-		equal_pos = ft_strchr(args[i], '=');
-		if (equal_pos)
-		{
-			key = ft_substr(args[i], 0, equal_pos - args[i]);
-			value = ft_strdup(equal_pos + 1);
-			set_env_value(key, value, shell);
-			free(key);
-			free(value);
-		}
+		if (process_export_arg(args[i], shell))
+			exit_status = 1;
 		i++;
 	}
-	return (0);
+	return (exit_status);
 }
