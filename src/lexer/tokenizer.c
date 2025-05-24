@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:44:41 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 18:55:43 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,24 +56,10 @@ void	free_tokens(t_token *tokens)
 	}
 }
 
-static char	*extract_word(char *str, int *i)
-{
-	int	start;
-
-	start = *i;
-	while (str[*i] && !is_whitespace(str[*i]) && !is_operator(str[*i])
-		&& !is_quote(str[*i]))
-		(*i)++;
-	return (ft_substr(str, start, *i - start));
-}
-
 t_token	*tokenize(char *input)
 {
 	t_token	*tokens;
-	t_token	*token;
-	char	*value;
 	int		i;
-	int		advance;
 
 	tokens = NULL;
 	i = 0;
@@ -83,20 +69,7 @@ t_token	*tokenize(char *input)
 			i++;
 		if (!input[i])
 			break ;
-		if (is_quote(input[i]))
-			value = extract_quoted_string(input, &i);
-				else if (is_operator(input[i]))
-		{
-			token = create_token(get_operator_type(input + i, &advance),
-					ft_substr(input, i, advance));
-			i += advance;
-			add_token(&tokens, token);
-			continue ;
-		}
-		else
-			value = extract_word(input, &i);
-		token = create_token(TOKEN_WORD, value);
-		add_token(&tokens, token);
+		process_token(input, &i, &tokens, 0);
 	}
 	return (tokens);
 }

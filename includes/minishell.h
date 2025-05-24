@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:43:55 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 18:54:49 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ int			is_operator(char c);
 int			is_quote(char c);
 char		*extract_quoted_string(char *str, int *i);
 t_token_type	get_operator_type(char *str, int *advance);
+void		process_token(char *input, int *i, t_token **tokens, int advance);
+char		*extract_word(char *str, int *i);
 
 /* パーサー関数 */
 t_ast_node	*parse(t_token *tokens);

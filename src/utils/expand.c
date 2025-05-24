@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:46:54 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 18:53:49 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,31 +48,35 @@ static char	*replace_var(char *result, char *var_name, char *var_value,
 	return (temp2);
 }
 
+static void	process_variable(char **result, int *i, t_minishell *shell)
+{
+	char	*var_name;
+	char	*var_value;
+	int		dollar_pos;
+
+	dollar_pos = *i;
+	(*i)++;
+	var_name = get_var_name(*result, i);
+	var_value = get_env_value(var_name, shell);
+	*result = replace_var(*result, var_name, var_value, dollar_pos);
+	free(var_name);
+	if (var_value)
+		*i = dollar_pos + ft_strlen(var_value);
+	else
+		*i = dollar_pos;
+}
+
 char	*expand_variables(char *str, t_minishell *shell)
 {
 	char	*result;
-	char	*var_name;
-	char	*var_value;
 	int		i;
-	int		dollar_pos;
 
 	result = ft_strdup(str);
 	i = 0;
 	while (result[i])
 	{
 		if (result[i] == '$' && result[i + 1])
-		{
-			dollar_pos = i;
-			i++;
-			var_name = get_var_name(result, &i);
-			var_value = get_env_value(var_name, shell);
-			result = replace_var(result, var_name, var_value, dollar_pos);
-			free(var_name);
-			if (var_value)
-				i = dollar_pos + ft_strlen(var_value);
-			else
-				i = dollar_pos;
-		}
+			process_variable(&result, &i, shell);
 		else
 			i++;
 	}
