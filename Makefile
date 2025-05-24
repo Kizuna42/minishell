@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/24 19:29:32 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/24 20:45:39 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,8 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/cleanup.c \
 		$(SRCDIR)/utils/expand.c \
 		$(SRCDIR)/utils/path_utils.c \
-		$(SRCDIR)/utils/args_utils.c
+		$(SRCDIR)/utils/args_utils.c \
+		$(SRCDIR)/utils/export_utils.c
 
 # Bonus source files
 BONUS_SRCS = $(SRCDIR)/bonus/logical_ops.c \
