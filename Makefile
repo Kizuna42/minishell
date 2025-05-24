@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/24 18:47:02 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/24 18:59:28 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ LIBFTDIR = libft
 # Source files
 SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/lexer/lexer.c \
+		$(SRCDIR)/lexer/lexer_utils.c \
 		$(SRCDIR)/lexer/tokenizer.c \
 		$(SRCDIR)/parser/parser.c \
 		$(SRCDIR)/parser/parser_utils.c \
