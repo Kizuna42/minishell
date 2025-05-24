@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:07:19 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 19:55:03 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ char	*extract_quoted_string(char *str, int *i)
 	char	quote_char;
 	int		start;
 	int		len;
+	char	*result;
+	char	*temp;
 
 	quote_char = str[*i];
 	start = ++(*i);
@@ -83,7 +85,15 @@ char	*extract_quoted_string(char *str, int *i)
 	{
 		len = *i - start;
 		(*i)++;
-		return (ft_substr(str, start, len));
+		result = ft_substr(str, start, len);
+		if (quote_char == '\'')
+		{
+			temp = ft_strjoin("\x01", result);
+			free(result);
+			result = ft_strjoin(temp, "\x01");
+			free(temp);
+		}
+		return (result);
 	}
 	return (NULL);
 }
