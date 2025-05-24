@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:57:17 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 19:04:03 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,22 @@ static void	init_minishell(t_minishell *shell, char **envp)
 	shell->last_exit_status = 0;
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);
+}
+
+static int	handle_input_loop(t_minishell *shell)
+{
+	char	*input;
+	int		should_exit;
+
+	while (1)
+	{
+		g_signal_status = 0;
+		input = readline(PROMPT);
+		should_exit = handle_readline_input(shell, input);
+		if (should_exit)
+			break ;
+	}
+	return (shell->last_exit_status);
 }
 
 void	process_input(char *input, t_minishell *shell)
@@ -41,22 +57,6 @@ void	process_input(char *input, t_minishell *shell)
 		free_ast(ast);
 	}
 	free_tokens(tokens);
-}
-
-static int	handle_input_loop(t_minishell *shell)
-{
-	char	*input;
-	int		should_exit;
-
-	while (1)
-	{
-		g_signal_status = 0;
-		input = readline(PROMPT);
-		should_exit = handle_readline_input(shell, input);
-		if (should_exit)
-			break ;
-	}
-	return (shell->last_exit_status);
 }
 
 int	main(int argc, char **argv, char **envp)
