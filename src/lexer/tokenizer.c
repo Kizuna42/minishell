@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:35:34 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 18:44:41 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,23 +67,13 @@ static char	*extract_word(char *str, int *i)
 	return (ft_substr(str, start, *i - start));
 }
 
-static void	process_operator_token(char *input, int *i, t_token **tokens)
-{
-	t_token	*token;
-	int		advance;
-
-	token = create_token(get_operator_type(input + *i, &advance),
-			ft_substr(input, *i, advance));
-	*i += advance;
-	add_token(tokens, token);
-}
-
 t_token	*tokenize(char *input)
 {
 	t_token	*tokens;
 	t_token	*token;
 	char	*value;
 	int		i;
+	int		advance;
 
 	tokens = NULL;
 	i = 0;
@@ -95,9 +85,12 @@ t_token	*tokenize(char *input)
 			break ;
 		if (is_quote(input[i]))
 			value = extract_quoted_string(input, &i);
-		else if (is_operator(input[i]))
+				else if (is_operator(input[i]))
 		{
-			process_operator_token(input, &i, &tokens);
+			token = create_token(get_operator_type(input + i, &advance),
+					ft_substr(input, i, advance));
+			i += advance;
+			add_token(&tokens, token);
 			continue ;
 		}
 		else
