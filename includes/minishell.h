@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:09:54 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 19:45:02 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,11 @@
 # define MAX_PATH 4096
 # define BUFFER_SIZE 1024
 
+/* クォートタイプ */
+# define QUOTE_NONE 0
+# define QUOTE_SINGLE 1
+# define QUOTE_DOUBLE 2
+
 /* グローバル変数（シグナル状態のみ） */
 extern volatile sig_atomic_t	g_signal_status;
 
@@ -57,6 +62,7 @@ typedef struct s_token
 {
 	t_token_type		type;
 	char				*value;
+	int					quote_type;
 	struct s_token		*next;
 }	t_token;
 
@@ -105,6 +111,8 @@ typedef struct s_minishell
 /* レキサー関数 */
 t_token			*tokenize(char *input);
 t_token			*create_token(t_token_type type, char *value);
+t_token			*create_token_with_quote(t_token_type type, char *value,
+					int quote_type);
 void			add_token(t_token **head, t_token *new_token);
 void			free_tokens(t_token *tokens);
 int				is_operator(char c);
@@ -152,6 +160,8 @@ void			free_env(t_env *env);
 
 /* ユーティリティ関数 */
 char			*expand_variables(char *str, t_minishell *shell);
+char			**expand_args(char **args, t_minishell *shell);
+void			free_args(char **args);
 char			**split_args(char *input);
 void			handle_signals(void);
 void			setup_signal_handlers(void);

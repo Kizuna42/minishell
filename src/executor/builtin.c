@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:39:33 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 19:44:21 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,19 +37,19 @@ int	execute_builtin(char **args, t_minishell *shell)
 {
 	if (!args || !args[0])
 		return (1);
-	if (ft_strncmp(args[0], "echo", 4) == 0)
+	if (ft_strncmp(args[0], "echo", 4) == 0 && ft_strlen(args[0]) == 4)
 		return (builtin_echo(args));
-	else if (ft_strncmp(args[0], "cd", 2) == 0)
+	else if (ft_strncmp(args[0], "cd", 2) == 0 && ft_strlen(args[0]) == 2)
 		return (builtin_cd(args, shell));
-	else if (ft_strncmp(args[0], "pwd", 3) == 0)
+	else if (ft_strncmp(args[0], "pwd", 3) == 0 && ft_strlen(args[0]) == 3)
 		return (builtin_pwd());
-	else if (ft_strncmp(args[0], "export", 6) == 0)
+	else if (ft_strncmp(args[0], "export", 6) == 0 && ft_strlen(args[0]) == 6)
 		return (builtin_export(args, shell));
-	else if (ft_strncmp(args[0], "unset", 5) == 0)
+	else if (ft_strncmp(args[0], "unset", 5) == 0 && ft_strlen(args[0]) == 5)
 		return (builtin_unset(args, shell));
-	else if (ft_strncmp(args[0], "env", 3) == 0)
+	else if (ft_strncmp(args[0], "env", 3) == 0 && ft_strlen(args[0]) == 3)
 		return (builtin_env(shell));
-	else if (ft_strncmp(args[0], "exit", 4) == 0)
+	else if (ft_strncmp(args[0], "exit", 4) == 0 && ft_strlen(args[0]) == 4)
 		return (builtin_exit(args, shell));
 	return (1);
 }

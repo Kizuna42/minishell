@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:34:17 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 19:16:50 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,7 @@ void	restore_std_fds(t_minishell *shell)
 int	handle_readline_input(t_minishell *shell, char *input)
 {
 	if (!input)
-	{
-		ft_putstr_fd("exit\n", STDERR_FILENO);
 		return (1);
-	}
 	if (g_signal_status == SIGINT)
 	{
 		shell->last_exit_status = 130;
