@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:04:03 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 19:45:09 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,14 @@ static int	handle_input_loop(t_minishell *shell)
 	while (1)
 	{
 		g_signal_status = 0;
-		input = readline(PROMPT);
+		if (isatty(STDIN_FILENO))
+			input = readline(PROMPT);
+		else
+		{
+			input = get_next_line(STDIN_FILENO);
+			if (input && input[ft_strlen(input) - 1] == '\n')
+				input[ft_strlen(input) - 1] = '\0';
+		}
 		should_exit = handle_readline_input(shell, input);
 		if (should_exit)
 			break ;
@@ -46,7 +53,8 @@ void	process_input(char *input, t_minishell *shell)
 
 	if (!input || !*input)
 		return ;
-	add_history(input);
+	if (isatty(STDIN_FILENO))
+		add_history(input);
 	tokens = tokenize(input);
 	if (!tokens)
 		return ;
