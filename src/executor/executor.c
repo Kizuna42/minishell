@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 22:31:39 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 19:01:47 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ int	execute_ast(t_ast_node *ast, t_minishell *shell)
 	else if (ast->type >= NODE_REDIRECT_IN
 		&& ast->type <= NODE_REDIRECT_HEREDOC)
 		return (execute_redirections(ast, shell));
+	else if (ast->type == NODE_AND || ast->type == NODE_OR)
+		return (execute_logical_ops(ast, shell));
 	return (0);
 }
 

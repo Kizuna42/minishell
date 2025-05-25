@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 20:03:51 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 20:53:46 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,13 @@ int	builtin_env(t_minishell *shell)
 	current = shell->env_list;
 	while (current)
 	{
-		ft_putstr_fd(current->key, STDOUT_FILENO);
-		ft_putstr_fd("=", STDOUT_FILENO);
-		ft_putstr_fd(current->value, STDOUT_FILENO);
-		ft_putstr_fd("\n", STDOUT_FILENO);
+		if (current->value)
+		{
+			ft_putstr_fd(current->key, STDOUT_FILENO);
+			ft_putstr_fd("=", STDOUT_FILENO);
+			ft_putstr_fd(current->value, STDOUT_FILENO);
+			ft_putstr_fd("\n", STDOUT_FILENO);
+		}
 		current = current->next;
 	}
 	return (0);
@@ -96,7 +99,7 @@ int	builtin_export(char **args, t_minishell *shell)
 	int	exit_status;
 
 	if (!args[1])
-		return (builtin_env(shell));
+		return (print_export_env(shell));
 	i = 1;
 	exit_status = 0;
 	while (args[i])

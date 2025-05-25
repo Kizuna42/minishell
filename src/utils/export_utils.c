@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 22:25:05 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 20:50:51 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,26 @@ int	process_export_arg(char *arg, t_minishell *shell)
 	free(key);
 	if (value)
 		free(value);
+	return (0);
+}
+
+int	print_export_env(t_minishell *shell)
+{
+	t_env	*current;
+
+	current = shell->env_list;
+	while (current)
+	{
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putstr_fd(current->key, STDOUT_FILENO);
+		if (current->value)
+		{
+			ft_putstr_fd("=\"", STDOUT_FILENO);
+			ft_putstr_fd(current->value, STDOUT_FILENO);
+			ft_putstr_fd("\"", STDOUT_FILENO);
+		}
+		ft_putstr_fd("\n", STDOUT_FILENO);
+		current = current->next;
+	}
 	return (0);
 }

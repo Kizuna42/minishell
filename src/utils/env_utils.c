@@ -6,11 +6,26 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:39:13 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 20:52:47 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+static t_env	*add_oldpwd_env(t_env *env_list)
+{
+	t_env	*new_env;
+
+	new_env = malloc(sizeof(t_env));
+	if (new_env)
+	{
+		new_env->key = ft_strdup("OLDPWD");
+		new_env->value = NULL;
+		new_env->next = env_list;
+		env_list = new_env;
+	}
+	return (env_list);
+}
 
 t_env	*init_env(char **envp)
 {
@@ -36,7 +51,7 @@ t_env	*init_env(char **envp)
 		}
 		i++;
 	}
-	return (env_list);
+	return (add_oldpwd_env(env_list));
 }
 
 char	*get_env_value(char *key, t_minishell *shell)
@@ -108,33 +123,4 @@ int	unset_env_value(char *key, t_minishell *shell)
 		current = current->next;
 	}
 	return (1);
-}
-
-char	**env_to_array(t_minishell *shell)
-{
-	t_env	*current;
-	char	**envp;
-	char	*temp;
-	int		count;
-	int		i;
-
-	count = 0;
-	current = shell->env_list;
-	while (current && ++count)
-		current = current->next;
-	envp = malloc(sizeof(char *) * (count + 1));
-	if (!envp)
-		return (NULL);
-	current = shell->env_list;
-	i = 0;
-	while (current)
-	{
-		temp = ft_strjoin(current->key, "=");
-		envp[i] = ft_strjoin(temp, current->value);
-		free(temp);
-		current = current->next;
-		i++;
-	}
-	envp[i] = NULL;
-	return (envp);
 }

@@ -6,30 +6,44 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 22:22:24 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 19:03:52 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+#include <limits.h>
 
 int	builtin_unset(char **args, t_minishell *shell)
 {
 	int	i;
+	int	exit_status;
 
 	if (!args[1])
 		return (0);
 	i = 1;
+	exit_status = 0;
 	while (args[i])
 	{
-		unset_env_value(args[i], shell);
+		if (!is_valid_identifier(args[i]))
+		{
+			ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
+			ft_putstr_fd(args[i], STDERR_FILENO);
+			ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+			exit_status = 1;
+		}
+		else
+		{
+			unset_env_value(args[i], shell);
+		}
 		i++;
 	}
-	return (0);
+	return (exit_status);
 }
 
 static int	is_numeric_string(char *str)
 {
-	int	i;
+	int		i;
+	char	*endptr;
 
 	if (!str || !*str)
 		return (0);
@@ -44,6 +58,12 @@ static int	is_numeric_string(char *str)
 			return (0);
 		i++;
 	}
+	errno = 0;
+	strtol(str, &endptr, 10);
+	if (*endptr != '\0')
+		return (0);
+	if (errno == ERANGE)
+		return (0);
 	return (1);
 }
 

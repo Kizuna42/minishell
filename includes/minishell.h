@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:29:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 20:51:48 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ char			*extract_word(char *str, int *i);
 
 /* パーサー関数 */
 t_ast_node		*parse(t_token *tokens);
+t_ast_node		*parse_logical_ops(t_token **tokens);
 t_ast_node		*parse_pipeline(t_token **tokens);
 t_ast_node		*parse_command(t_token **tokens);
 t_ast_node		*parse_redirections(t_token **tokens, t_ast_node *cmd);
@@ -140,12 +141,15 @@ t_ast_node		*create_command_with_args(int arg_count);
 char			**allocate_args_array(int arg_count, t_ast_node *cmd);
 void			cleanup_on_error(char **args, int i, t_ast_node *cmd);
 void			finalize_command_args(t_ast_node *cmd, char **args, int i);
+int				validate_syntax(t_token *tokens);
+void			print_syntax_error(char *token);
 
 /* エグゼキューター関数 */
 int				execute_ast(t_ast_node *ast, t_minishell *shell);
 int				execute_command(t_ast_node *node, t_minishell *shell);
 int				execute_pipeline(t_ast_node *node, t_minishell *shell);
 int				execute_redirections(t_ast_node *node, t_minishell *shell);
+int				execute_logical_ops(t_ast_node *node, t_minishell *shell);
 char			*find_command_path(char *command, t_minishell *shell);
 int				check_file_access(char *command);
 
@@ -180,6 +184,7 @@ void			cleanup_minishell(t_minishell *shell);
 int				is_whitespace(char c);
 int				is_valid_identifier(char *str);
 int				process_export_arg(char *arg, t_minishell *shell);
+int				print_export_env(t_minishell *shell);
 char			*ft_strtok(char *str, const char *delim);
 void			restore_std_fds(t_minishell *shell);
 int				handle_readline_input(t_minishell *shell, char *input);
