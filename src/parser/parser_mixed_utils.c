@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:27:37 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:38:07 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ t_ast_node	*create_command_with_args(int arg_count)
 {
 	t_ast_node	*cmd;
 
-	if (arg_count == 0)
-		return (NULL);
+	(void)arg_count;
 	cmd = create_ast_node(NODE_COMMAND);
 	return (cmd);
 }

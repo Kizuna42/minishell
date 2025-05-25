@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:30:12 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:35:57 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,14 @@ static char	*expand_redirect_filename(char *filename)
 	char	**wildcard_matches;
 	char	*result;
 
-	wildcard_matches = expand_wildcard(filename);
-	if (wildcard_matches)
+	if (ft_strchr(filename, '*') && !ft_strchr(filename, '\x01')
+		&& !ft_strchr(filename, '\x02'))
 	{
+		wildcard_matches = expand_wildcard(filename);
+		if (!wildcard_matches)
+		{
+			return (ft_strdup(filename));
+		}
 		if (wildcard_matches[1])
 		{
 			free_args(wildcard_matches);

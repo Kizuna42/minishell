@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:01:45 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:37:37 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,9 @@ int	execute_command(t_ast_node *node, t_minishell *shell)
 {
 	char	**expanded_args;
 
-	if (!node || !node->args || !node->args[0])
+	if (!node)
+		return (0);
+	if (!node->args || !node->args[0])
 		return (0);
 	expanded_args = expand_args(node->args, shell);
 	if (!expanded_args)
