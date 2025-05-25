@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 22:17:02 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 18:18:33 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,10 @@ t_ast_node		*parse_redirections(t_token **tokens, t_ast_node *cmd);
 t_ast_node		*create_ast_node(t_node_type type);
 void			free_ast(t_ast_node *ast);
 int				count_args(t_token *tokens);
+int				is_redirect_token(t_token_type type);
+t_ast_node		*create_redirect_node(t_token **tokens);
+int				count_word_tokens(t_token *tokens);
+t_ast_node		*parse_mixed_command(t_token **tokens);
 
 /* エグゼキューター関数 */
 int				execute_ast(t_ast_node *ast, t_minishell *shell);
@@ -138,6 +142,7 @@ int				execute_command(t_ast_node *node, t_minishell *shell);
 int				execute_pipeline(t_ast_node *node, t_minishell *shell);
 int				execute_redirections(t_ast_node *node, t_minishell *shell);
 char			*find_command_path(char *command, t_minishell *shell);
+int				check_file_access(char *command);
 
 /* ビルトイン関数 */
 int				is_builtin(char *command);
@@ -162,6 +167,7 @@ void			free_env(t_env *env);
 char			*expand_variables(char *str, t_minishell *shell);
 char			**expand_args(char **args, t_minishell *shell);
 void			free_args(char **args);
+char			**remove_empty_args(char **args);
 char			**split_args(char *input);
 void			handle_signals(void);
 void			setup_signal_handlers(void);
@@ -186,6 +192,8 @@ void			close_pipes(int pipefd[2]);
 /* エラーハンドリング */
 void			print_error(char *cmd, char *msg);
 void			perror_exit(char *msg);
+int				handle_directory_error(char *command);
+int				handle_permission_error(char *command);
 
 # ifdef BONUS
 

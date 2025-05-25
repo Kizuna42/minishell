@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_utils.c                                     :+:      :+:    :+:   */
+/*   error_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,43 +12,28 @@
 
 #include "../../includes/minishell.h"
 
-static t_ast_node	*create_pipe_node(t_ast_node *left, t_token **tokens)
+int	handle_directory_error(char *command)
 {
-	t_ast_node	*pipe_node;
-
-	*tokens = (*tokens)->next;
-	pipe_node = create_ast_node(NODE_PIPE);
-	if (!pipe_node)
+	if (ft_strchr(command, '/'))
 	{
-		free_ast(left);
-		return (NULL);
+		print_error(command, "is a directory");
+		return (126);
 	}
-	pipe_node->left = left;
-	pipe_node->right = parse_pipeline(tokens);
-	if (!pipe_node->right)
+	else
 	{
-		free_ast(pipe_node);
-		return (NULL);
+		return (127);
 	}
-	return (pipe_node);
 }
 
-t_ast_node	*parse_pipeline(t_token **tokens)
+int	handle_permission_error(char *command)
 {
-	t_ast_node	*left;
-
-	left = parse_command(tokens);
-	if (!left)
-		return (NULL);
-	left = parse_redirections(tokens, left);
-	if (*tokens && (*tokens)->type == TOKEN_PIPE)
-		return (create_pipe_node(left, tokens));
-	return (left);
-}
-
-t_ast_node	*parse(t_token *tokens)
-{
-	if (!tokens)
-		return (NULL);
-	return (parse_pipeline(&tokens));
+	if (ft_strchr(command, '/'))
+	{
+		print_error(command, "Permission denied");
+		return (126);
+	}
+	else
+	{
+		return (127);
+	}
 }

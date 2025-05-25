@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 20:53:43 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 22:27:23 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,24 +32,6 @@ int	handle_readline_input(t_minishell *shell, char *input)
 	restore_std_fds(shell);
 	free(input);
 	return (0);
-}
-
-int	is_valid_identifier(char *str)
-{
-	int	i;
-
-	if (!str || !*str)
-		return (0);
-	if (!ft_isalpha(str[0]) && str[0] != '_')
-		return (0);
-	i = 1;
-	while (str[i])
-	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
-			return (0);
-		i++;
-	}
-	return (1);
 }
 
 int	is_whitespace(char c)

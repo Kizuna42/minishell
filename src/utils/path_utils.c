@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:27:50 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 18:05:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,42 @@ static char	*search_in_paths(char **paths, char *command)
 	return (NULL);
 }
 
+int	check_file_access(char *command)
+{
+	struct stat	st;
+
+	if (access(command, F_OK) != 0)
+		return (127);
+	if (stat(command, &st) == 0 && S_ISDIR(st.st_mode))
+		return (handle_directory_error(command));
+	if (access(command, X_OK) != 0)
+		return (handle_permission_error(command));
+	return (0);
+}
+
+static char	*check_absolute_path(char *command)
+{
+	struct stat	st;
+
+	if (access(command, F_OK) == 0)
+	{
+		if (stat(command, &st) == 0 && S_ISDIR(st.st_mode))
+			return (NULL);
+		if (access(command, X_OK) == 0)
+			return (ft_strdup(command));
+	}
+	return (NULL);
+}
+
 char	*find_command_path(char *command, t_minishell *shell)
 {
-	char	*path_env;
-	char	**paths;
-	char	*result;
-	int		i;
+	char		*path_env;
+	char		**paths;
+	char		*result;
+	int			i;
 
 	if (ft_strchr(command, '/'))
-		return (ft_strdup(command));
+		return (check_absolute_path(command));
 	path_env = get_env_value("PATH", shell);
 	if (!path_env)
 		return (NULL);

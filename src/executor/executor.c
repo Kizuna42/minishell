@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:47:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 22:31:39 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,11 @@ static int	handle_external_cmd(char **expanded_args, t_minishell *shell)
 	path = find_command_path(expanded_args[0], shell);
 	if (!path)
 	{
-		print_error(expanded_args[0], "command not found");
+		exit_status = check_file_access(expanded_args[0]);
+		if (exit_status == 127)
+			print_error(expanded_args[0], "command not found");
 		free_args(expanded_args);
-		return (127);
+		return (exit_status);
 	}
 	exit_status = execute_external_command(path, expanded_args, shell->envp);
 	free(path);
@@ -81,6 +83,11 @@ int	execute_command(t_ast_node *node, t_minishell *shell)
 	expanded_args = expand_args(node->args, shell);
 	if (!expanded_args)
 		return (1);
+	if (!expanded_args[0] || !*expanded_args[0])
+	{
+		free_args(expanded_args);
+		return (0);
+	}
 	if (is_builtin(expanded_args[0]))
 		return (handle_builtin_cmd(expanded_args, shell));
 	return (handle_external_cmd(expanded_args, shell));
