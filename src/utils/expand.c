@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 22:31:24 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:15:03 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,12 @@ char	*expand_variables(char *str, t_minishell *shell)
 		if (result[i] == '\x01')
 		{
 			in_single_quote = !in_single_quote;
-			memmove(result + i, result + i + 1, ft_strlen(result + i));
+			i++;
+			continue ;
+		}
+		if (result[i] == '\x02')
+		{
+			i++;
 			continue ;
 		}
 		if (result[i] == '$' && result[i + 1] && !in_single_quote)
@@ -102,23 +107,18 @@ char	*expand_variables(char *str, t_minishell *shell)
 char	**expand_args(char **args, t_minishell *shell)
 {
 	char	**expanded_args;
+	char	**wildcard_expanded;
 	char	**filtered_args;
-	int		i;
 
-	i = 0;
-	while (args[i])
-		i++;
-	expanded_args = malloc(sizeof(char *) * (i + 1));
+	expanded_args = expand_variables_array(args, shell);
 	if (!expanded_args)
 		return (NULL);
-	i = 0;
-	while (args[i])
-	{
-		expanded_args[i] = expand_variables(args[i], shell);
-		i++;
-	}
-	expanded_args[i] = NULL;
-	filtered_args = remove_empty_args(expanded_args);
-	free_args(expanded_args);
+	wildcard_expanded = expand_with_wildcards(expanded_args);
+	if (!wildcard_expanded)
+		wildcard_expanded = expanded_args;
+	else
+		free_args(expanded_args);
+	filtered_args = remove_empty_args(wildcard_expanded);
+	free_args(wildcard_expanded);
 	return (filtered_args);
 }

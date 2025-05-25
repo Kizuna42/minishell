@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:18:33 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:11:43 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ char			*extract_word(char *str, int *i);
 
 /* パーサー関数 */
 t_ast_node		*parse(t_token *tokens);
+t_ast_node		*parse_logical_ops(t_token **tokens);
 t_ast_node		*parse_pipeline(t_token **tokens);
 t_ast_node		*parse_command(t_token **tokens);
 t_ast_node		*parse_redirections(t_token **tokens, t_ast_node *cmd);
@@ -135,12 +136,20 @@ int				is_redirect_token(t_token_type type);
 t_ast_node		*create_redirect_node(t_token **tokens);
 int				count_word_tokens(t_token *tokens);
 t_ast_node		*parse_mixed_command(t_token **tokens);
+t_ast_node		*find_command_node(t_ast_node *node);
+t_ast_node		*create_command_with_args(int arg_count);
+char			**allocate_args_array(int arg_count, t_ast_node *cmd);
+void			cleanup_on_error(char **args, int i, t_ast_node *cmd);
+void			finalize_command_args(t_ast_node *cmd, char **args, int i);
+int				validate_syntax(t_token *tokens);
+void			print_syntax_error(char *token);
 
 /* エグゼキューター関数 */
 int				execute_ast(t_ast_node *ast, t_minishell *shell);
 int				execute_command(t_ast_node *node, t_minishell *shell);
 int				execute_pipeline(t_ast_node *node, t_minishell *shell);
 int				execute_redirections(t_ast_node *node, t_minishell *shell);
+int				execute_logical_ops(t_ast_node *node, t_minishell *shell);
 char			*find_command_path(char *command, t_minishell *shell);
 int				check_file_access(char *command);
 
@@ -166,8 +175,13 @@ void			free_env(t_env *env);
 /* ユーティリティ関数 */
 char			*expand_variables(char *str, t_minishell *shell);
 char			**expand_args(char **args, t_minishell *shell);
+char			**expand_variables_array(char **args, t_minishell *shell);
+char			*remove_quote_markers(char *str);
 void			free_args(char **args);
 char			**remove_empty_args(char **args);
+char			**expand_wildcard(char *pattern);
+char			**expand_with_wildcards(char **args);
+char			**fill_wildcard_result(char **args, char **result);
 char			**split_args(char *input);
 void			handle_signals(void);
 void			setup_signal_handlers(void);
@@ -175,6 +189,7 @@ void			cleanup_minishell(t_minishell *shell);
 int				is_whitespace(char c);
 int				is_valid_identifier(char *str);
 int				process_export_arg(char *arg, t_minishell *shell);
+int				print_export_env(t_minishell *shell);
 char			*ft_strtok(char *str, const char *delim);
 void			restore_std_fds(t_minishell *shell);
 int				handle_readline_input(t_minishell *shell, char *input);
@@ -184,6 +199,10 @@ void			process_input(char *input, t_minishell *shell);
 int				handle_input_redirect(char *filename);
 int				handle_output_redirect(char *filename, int append);
 int				handle_heredoc(char *delimiter);
+int				execute_redirect_list(t_ast_node **redirects, int count);
+int				is_redirect_node(t_ast_node *node);
+t_ast_node		*collect_redirections(t_ast_node *node, t_ast_node **redirects,
+					int *count);
 
 /* パイプ関数 */
 int				setup_pipes(int pipefd[2]);

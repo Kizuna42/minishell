@@ -1,77 +1,64 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   args_utils.c                                       :+:      :+:    :+:   */
+/*   env_array.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:12:15 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 20:53:12 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	free_args(char **args)
+static int	count_env_vars(t_env *env_list)
 {
-	int	i;
-
-	if (!args)
-		return ;
-	i = 0;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
-}
-
-static int	count_non_empty_args(char **args)
-{
-	int	count;
-	int	i;
+	int		count;
+	t_env	*current;
 
 	count = 0;
-	i = 0;
-	while (args[i])
+	current = env_list;
+	while (current)
 	{
-		if (args[i][0] != '\0')
+		if (current->value)
 			count++;
-		i++;
+		current = current->next;
 	}
 	return (count);
 }
 
-static void	copy_non_empty_args(char **args, char **result)
+static void	fill_env_array(char **envp, t_env *env_list)
 {
+	t_env	*current;
+	char	*temp;
 	int		i;
-	int		j;
-	char	*cleaned;
 
+	current = env_list;
 	i = 0;
-	j = 0;
-	while (args[i])
+	while (current)
 	{
-		if (args[i][0] != '\0')
+		if (current->value)
 		{
-			cleaned = remove_quote_markers(args[i]);
-			result[j++] = cleaned;
+			temp = ft_strjoin(current->key, "=");
+			envp[i] = ft_strjoin(temp, current->value);
+			free(temp);
+			i++;
 		}
-		i++;
+		current = current->next;
 	}
-	result[j] = NULL;
+	envp[i] = NULL;
 }
 
-char	**remove_empty_args(char **args)
+char	**env_to_array(t_minishell *shell)
 {
-	char	**result;
+	char	**envp;
 	int		count;
 
-	count = count_non_empty_args(args);
-	result = malloc(sizeof(char *) * (count + 1));
-	if (!result)
+	count = count_env_vars(shell->env_list);
+	envp = malloc(sizeof(char *) * (count + 1));
+	if (!envp)
 		return (NULL);
-	copy_non_empty_args(args, result);
-	return (result);
+	fill_env_array(envp, shell->env_list);
+	return (envp);
 }

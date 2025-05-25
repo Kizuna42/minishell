@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/25 18:17:45 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/25 21:07:41 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,22 +29,32 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/lexer/tokenizer.c \
 		$(SRCDIR)/parser/parser.c \
 		$(SRCDIR)/parser/parser_utils.c \
+		$(SRCDIR)/parser/parser_syntax.c \
+		$(SRCDIR)/parser/parser_logical.c \
 		$(SRCDIR)/parser/parser_redirect.c \
+		$(SRCDIR)/parser/parser_redirect_mixed.c \
+		$(SRCDIR)/parser/parser_mixed_utils.c \
 		$(SRCDIR)/executor/executor.c \
+		$(SRCDIR)/executor/executor_logical.c \
 		$(SRCDIR)/executor/builtin.c \
 		$(SRCDIR)/executor/builtin_commands.c \
 		$(SRCDIR)/executor/builtin_extra.c \
 		$(SRCDIR)/executor/redirections.c \
+		$(SRCDIR)/executor/redirect_utils.c \
 		$(SRCDIR)/executor/pipes.c \
 		$(SRCDIR)/utils/utils.c \
 		$(SRCDIR)/utils/env_utils.c \
+		$(SRCDIR)/utils/env_array.c \
 		$(SRCDIR)/utils/signal_utils.c \
 		$(SRCDIR)/utils/cleanup.c \
 		$(SRCDIR)/utils/expand.c \
+		$(SRCDIR)/utils/expand_utils.c \
 		$(SRCDIR)/utils/path_utils.c \
 		$(SRCDIR)/utils/args_utils.c \
 		$(SRCDIR)/utils/export_utils.c \
 		$(SRCDIR)/utils/error_utils.c \
+		$(SRCDIR)/utils/wildcard.c \
+		$(SRCDIR)/utils/wildcard_expand.c \
 		$(SRCDIR)/parser/parser_command.c
 
 # Bonus source files
