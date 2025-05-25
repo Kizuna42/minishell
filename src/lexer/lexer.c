@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:14:49 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:25:23 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,36 +71,5 @@ t_token_type	get_operator_type(char *str, int *advance)
 
 char	*extract_quoted_string(char *str, int *i)
 {
-	char	quote_char;
-	int		start;
-	int		len;
-	char	*result;
-	char	*temp;
-
-	quote_char = str[*i];
-	start = ++(*i);
-	while (str[*i] && str[*i] != quote_char)
-		(*i)++;
-	if (str[*i] == quote_char)
-	{
-		len = *i - start;
-		(*i)++;
-		result = ft_substr(str, start, len);
-		if (quote_char == '\'')
-		{
-			temp = ft_strjoin("\x01", result);
-			free(result);
-			result = ft_strjoin(temp, "\x01");
-			free(temp);
-		}
-		else if (quote_char == '"')
-		{
-			temp = ft_strjoin("\x02", result);
-			free(result);
-			result = ft_strjoin(temp, "\x02");
-			free(temp);
-		}
-		return (result);
-	}
-	return (NULL);
+	return (extract_quoted_string_split(str, i));
 }

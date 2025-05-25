@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:12:58 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:31:03 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,19 @@ static int	handle_input_loop(t_minishell *shell)
 	return (shell->last_exit_status);
 }
 
+static void	execute_parsed_ast(t_ast_node *ast, t_minishell *shell)
+{
+	if (ast)
+	{
+		shell->last_exit_status = execute_ast(ast, shell);
+		free_ast(ast);
+	}
+	else
+	{
+		shell->last_exit_status = 1;
+	}
+}
+
 void	process_input(char *input, t_minishell *shell)
 {
 	t_token		*tokens;
@@ -58,16 +71,14 @@ void	process_input(char *input, t_minishell *shell)
 	tokens = tokenize(input);
 	if (!tokens)
 		return ;
+	if (!validate_syntax(tokens))
+	{
+		shell->last_exit_status = 2;
+		free_tokens(tokens);
+		return ;
+	}
 	ast = parse(tokens);
-	if (ast)
-	{
-		shell->last_exit_status = execute_ast(ast, shell);
-		free_ast(ast);
-	}
-	else
-	{
-		shell->last_exit_status = 1;
-	}
+	execute_parsed_ast(ast, shell);
 	free_tokens(tokens);
 }
 

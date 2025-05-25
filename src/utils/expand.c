@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:15:03 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:26:51 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static char	*replace_var(char *result, char *var_name, char *var_value,
 	return (temp2);
 }
 
-static void	process_variable(char **result, int *i, t_minishell *shell)
+void	process_variable(char **result, int *i, t_minishell *shell)
 {
 	char	*var_name;
 	char	*var_value;
@@ -76,32 +76,7 @@ static void	process_variable(char **result, int *i, t_minishell *shell)
 
 char	*expand_variables(char *str, t_minishell *shell)
 {
-	char	*result;
-	int		i;
-	int		in_single_quote;
-
-	result = ft_strdup(str);
-	i = 0;
-	in_single_quote = 0;
-	while (result[i])
-	{
-		if (result[i] == '\x01')
-		{
-			in_single_quote = !in_single_quote;
-			i++;
-			continue ;
-		}
-		if (result[i] == '\x02')
-		{
-			i++;
-			continue ;
-		}
-		if (result[i] == '$' && result[i + 1] && !in_single_quote)
-			process_variable(&result, &i, shell);
-		else
-			i++;
-	}
-	return (result);
+	return (expand_variables_split(str, shell));
 }
 
 char	**expand_args(char **args, t_minishell *shell)
