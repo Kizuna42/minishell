@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/24 20:45:39 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/25 18:17:45 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/lexer/tokenizer.c \
 		$(SRCDIR)/parser/parser.c \
 		$(SRCDIR)/parser/parser_utils.c \
+		$(SRCDIR)/parser/parser_redirect.c \
 		$(SRCDIR)/executor/executor.c \
 		$(SRCDIR)/executor/builtin.c \
 		$(SRCDIR)/executor/builtin_commands.c \
@@ -42,7 +43,9 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/expand.c \
 		$(SRCDIR)/utils/path_utils.c \
 		$(SRCDIR)/utils/args_utils.c \
-		$(SRCDIR)/utils/export_utils.c
+		$(SRCDIR)/utils/export_utils.c \
+		$(SRCDIR)/utils/error_utils.c \
+		$(SRCDIR)/parser/parser_command.c
 
 # Bonus source files
 BONUS_SRCS = $(SRCDIR)/bonus/logical_ops.c \

@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:59:39 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/24 22:31:24 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ char	*expand_variables(char *str, t_minishell *shell)
 char	**expand_args(char **args, t_minishell *shell)
 {
 	char	**expanded_args;
+	char	**filtered_args;
 	int		i;
 
 	i = 0;
@@ -117,5 +118,7 @@ char	**expand_args(char **args, t_minishell *shell)
 		i++;
 	}
 	expanded_args[i] = NULL;
-	return (expanded_args);
+	filtered_args = remove_empty_args(expanded_args);
+	free_args(expanded_args);
+	return (filtered_args);
 }
