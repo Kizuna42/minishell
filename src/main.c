@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:57:41 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:12:58 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	process_input(char *input, t_minishell *shell)
 	}
 	else
 	{
-		shell->last_exit_status = 2;
+		shell->last_exit_status = 1;
 	}
 	free_tokens(tokens);
 }

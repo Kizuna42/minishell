@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:26:29 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:10:02 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,34 @@ static t_node_type	get_redirect_node_type(t_token_type token_type)
 		return (NODE_REDIRECT_HEREDOC);
 }
 
+static char	*expand_redirect_filename(char *filename)
+{
+	char	**wildcard_matches;
+	char	*result;
+	int		count;
+
+	wildcard_matches = expand_wildcard(filename);
+	if (wildcard_matches)
+	{
+		count = 0;
+		while (wildcard_matches[count])
+			count++;
+		if (count == 1)
+		{
+			result = ft_strdup(wildcard_matches[0]);
+			free_args(wildcard_matches);
+			return (result);
+		}
+		else if (count > 1)
+		{
+			free_args(wildcard_matches);
+			return (NULL);
+		}
+		free_args(wildcard_matches);
+	}
+	return (ft_strdup(filename));
+}
+
 t_ast_node	*create_redirect_node(t_token **tokens)
 {
 	t_ast_node		*redirect_node;
@@ -42,7 +70,12 @@ t_ast_node	*create_redirect_node(t_token **tokens)
 		return (NULL);
 	if (*tokens && (*tokens)->type == TOKEN_WORD)
 	{
-		redirect_node->filename = ft_strdup((*tokens)->value);
+		redirect_node->filename = expand_redirect_filename((*tokens)->value);
+		if (!redirect_node->filename)
+		{
+			free(redirect_node);
+			return (NULL);
+		}
 		*tokens = (*tokens)->next;
 	}
 	return (redirect_node);

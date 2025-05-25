@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 20:51:48 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:11:43 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,8 +175,13 @@ void			free_env(t_env *env);
 /* ユーティリティ関数 */
 char			*expand_variables(char *str, t_minishell *shell);
 char			**expand_args(char **args, t_minishell *shell);
+char			**expand_variables_array(char **args, t_minishell *shell);
+char			*remove_quote_markers(char *str);
 void			free_args(char **args);
 char			**remove_empty_args(char **args);
+char			**expand_wildcard(char *pattern);
+char			**expand_with_wildcards(char **args);
+char			**fill_wildcard_result(char **args, char **result);
 char			**split_args(char *input);
 void			handle_signals(void);
 void			setup_signal_handlers(void);

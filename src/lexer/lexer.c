@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:57:03 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:14:49 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,13 @@ char	*extract_quoted_string(char *str, int *i)
 			temp = ft_strjoin("\x01", result);
 			free(result);
 			result = ft_strjoin(temp, "\x01");
+			free(temp);
+		}
+		else if (quote_char == '"')
+		{
+			temp = ft_strjoin("\x02", result);
+			free(result);
+			result = ft_strjoin(temp, "\x02");
 			free(temp);
 		}
 		return (result);

@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 19:01:47 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:01:45 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,12 @@ static int	handle_external_cmd(char **expanded_args, t_minishell *shell)
 	{
 		exit_status = check_file_access(expanded_args[0]);
 		if (exit_status == 127)
-			print_error(expanded_args[0], "command not found");
+		{
+			if (ft_strchr(expanded_args[0], '/'))
+				print_error(expanded_args[0], "No such file or directory");
+			else
+				print_error(expanded_args[0], "command not found");
+		}
 		free_args(expanded_args);
 		return (exit_status);
 	}
