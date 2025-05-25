@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/25 18:17:45 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/25 18:29:45 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,11 +30,14 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/parser/parser.c \
 		$(SRCDIR)/parser/parser_utils.c \
 		$(SRCDIR)/parser/parser_redirect.c \
+		$(SRCDIR)/parser/parser_redirect_mixed.c \
+		$(SRCDIR)/parser/parser_mixed_utils.c \
 		$(SRCDIR)/executor/executor.c \
 		$(SRCDIR)/executor/builtin.c \
 		$(SRCDIR)/executor/builtin_commands.c \
 		$(SRCDIR)/executor/builtin_extra.c \
 		$(SRCDIR)/executor/redirections.c \
+		$(SRCDIR)/executor/redirect_utils.c \
 		$(SRCDIR)/executor/pipes.c \
 		$(SRCDIR)/utils/utils.c \
 		$(SRCDIR)/utils/env_utils.c \

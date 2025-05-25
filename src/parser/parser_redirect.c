@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:20:41 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 18:26:29 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,73 +68,4 @@ int	count_word_tokens(t_token *tokens)
 		tokens = tokens->next;
 	}
 	return (count);
-}
-
-static int	handle_redirect_in_command(t_token **tokens, t_ast_node **cmd)
-{
-	t_ast_node	*redirect_node;
-
-	redirect_node = create_redirect_node(tokens);
-	if (!redirect_node)
-		return (0);
-	redirect_node->left = *cmd;
-	*cmd = redirect_node;
-	return (1);
-}
-
-static t_ast_node	*find_command_node(t_ast_node *node)
-{
-	while (node && node->type != NODE_COMMAND)
-		node = node->left;
-	return (node);
-}
-
-t_ast_node	*parse_mixed_command(t_token **tokens)
-{
-	t_ast_node	*cmd;
-	t_ast_node	*command_node;
-	char		**args;
-	int			arg_count;
-	int			i;
-
-	arg_count = count_word_tokens(*tokens);
-	if (arg_count == 0)
-		return (NULL);
-	cmd = create_ast_node(NODE_COMMAND);
-	if (!cmd)
-		return (NULL);
-	args = malloc(sizeof(char *) * (arg_count + 1));
-	if (!args)
-	{
-		free_ast(cmd);
-		return (NULL);
-	}
-	i = 0;
-	while (*tokens && ((*tokens)->type == TOKEN_WORD
-			|| is_redirect_token((*tokens)->type)))
-	{
-		if ((*tokens)->type == TOKEN_WORD)
-		{
-			args[i++] = ft_strdup((*tokens)->value);
-			*tokens = (*tokens)->next;
-		}
-		else if (is_redirect_token((*tokens)->type))
-		{
-			if (!handle_redirect_in_command(tokens, &cmd))
-			{
-				while (--i >= 0)
-					free(args[i]);
-				free(args);
-				free_ast(cmd);
-				return (NULL);
-			}
-		}
-	}
-	args[i] = NULL;
-	command_node = find_command_node(cmd);
-	if (command_node)
-		command_node->args = args;
-	else
-		cmd->args = args;
-	return (cmd);
 }

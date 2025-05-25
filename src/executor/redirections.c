@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:05:22 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 18:29:36 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,18 +78,15 @@ int	handle_heredoc(char *delimiter)
 
 int	execute_redirections(t_ast_node *node, t_minishell *shell)
 {
-	int	result;
+	t_ast_node	*redirects[10];
+	t_ast_node	*cmd_node;
+	int			count;
+	int			result;
 
-	result = 0;
-	if (node->type == NODE_REDIRECT_IN)
-		result = handle_input_redirect(node->filename);
-	else if (node->type == NODE_REDIRECT_OUT)
-		result = handle_output_redirect(node->filename, 0);
-	else if (node->type == NODE_REDIRECT_APPEND)
-		result = handle_output_redirect(node->filename, 1);
-	else if (node->type == NODE_REDIRECT_HEREDOC)
-		result = handle_heredoc(node->filename);
+	count = 0;
+	cmd_node = collect_redirections(node, redirects, &count);
+	result = execute_redirect_list(redirects, count);
 	if (result != 0)
 		return (result);
-	return (execute_ast(node->left, shell));
+	return (execute_ast(cmd_node, shell));
 }

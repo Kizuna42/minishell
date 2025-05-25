@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:18:33 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 18:29:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,11 @@ int				is_redirect_token(t_token_type type);
 t_ast_node		*create_redirect_node(t_token **tokens);
 int				count_word_tokens(t_token *tokens);
 t_ast_node		*parse_mixed_command(t_token **tokens);
+t_ast_node		*find_command_node(t_ast_node *node);
+t_ast_node		*create_command_with_args(int arg_count);
+char			**allocate_args_array(int arg_count, t_ast_node *cmd);
+void			cleanup_on_error(char **args, int i, t_ast_node *cmd);
+void			finalize_command_args(t_ast_node *cmd, char **args, int i);
 
 /* エグゼキューター関数 */
 int				execute_ast(t_ast_node *ast, t_minishell *shell);
@@ -184,6 +189,10 @@ void			process_input(char *input, t_minishell *shell);
 int				handle_input_redirect(char *filename);
 int				handle_output_redirect(char *filename, int append);
 int				handle_heredoc(char *delimiter);
+int				execute_redirect_list(t_ast_node **redirects, int count);
+int				is_redirect_node(t_ast_node *node);
+t_ast_node		*collect_redirections(t_ast_node *node, t_ast_node **redirects,
+					int *count);
 
 /* パイプ関数 */
 int				setup_pipes(int pipefd[2]);

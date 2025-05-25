@@ -1,0 +1,13 @@
+evaluation.txt
+includes
+libft
+Makefile
+minishell
+minishell_tester
+obj
+README.md
+src
+test_minishell.sh
+test1.txt
+test2.txt
+todo.txt
