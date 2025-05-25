@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:31:03 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:36:17 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,19 @@ static void	execute_parsed_ast(t_ast_node *ast, t_minishell *shell)
 	}
 }
 
+static int	validate_and_parse(t_token *tokens, t_ast_node **ast)
+{
+	if (!validate_syntax(tokens))
+		return (2);
+	*ast = parse(tokens);
+	return (0);
+}
+
 void	process_input(char *input, t_minishell *shell)
 {
 	t_token		*tokens;
 	t_ast_node	*ast;
+	int			syntax_error;
 
 	if (!input || !*input)
 		return ;
@@ -71,13 +80,13 @@ void	process_input(char *input, t_minishell *shell)
 	tokens = tokenize(input);
 	if (!tokens)
 		return ;
-	if (!validate_syntax(tokens))
+	syntax_error = validate_and_parse(tokens, &ast);
+	if (syntax_error)
 	{
-		shell->last_exit_status = 2;
+		shell->last_exit_status = syntax_error;
 		free_tokens(tokens);
 		return ;
 	}
-	ast = parse(tokens);
 	execute_parsed_ast(ast, shell);
 	free_tokens(tokens);
 }
