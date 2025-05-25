@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/25 21:07:41 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/25 21:25:47 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ LIBFTDIR = libft
 SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/lexer/lexer.c \
 		$(SRCDIR)/lexer/lexer_utils.c \
+		$(SRCDIR)/lexer/lexer_quote.c \
 		$(SRCDIR)/lexer/tokenizer.c \
 		$(SRCDIR)/parser/parser.c \
 		$(SRCDIR)/parser/parser_utils.c \
@@ -49,6 +50,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/cleanup.c \
 		$(SRCDIR)/utils/expand.c \
 		$(SRCDIR)/utils/expand_utils.c \
+		$(SRCDIR)/utils/expand_split.c \
 		$(SRCDIR)/utils/path_utils.c \
 		$(SRCDIR)/utils/args_utils.c \
 		$(SRCDIR)/utils/export_utils.c \

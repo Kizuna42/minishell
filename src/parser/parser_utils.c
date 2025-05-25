@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 19:02:49 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:31:04 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 t_ast_node	*parse(t_token *tokens)
 {
 	if (!tokens)
-		return (NULL);
-	if (!validate_syntax(tokens))
 		return (NULL);
 	return (parse_logical_ops(&tokens));
 }

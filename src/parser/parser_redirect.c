@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:10:02 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:30:12 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,28 +34,20 @@ static char	*expand_redirect_filename(char *filename)
 {
 	char	**wildcard_matches;
 	char	*result;
-	int		count;
 
 	wildcard_matches = expand_wildcard(filename);
 	if (wildcard_matches)
 	{
-		count = 0;
-		while (wildcard_matches[count])
-			count++;
-		if (count == 1)
-		{
-			result = ft_strdup(wildcard_matches[0]);
-			free_args(wildcard_matches);
-			return (result);
-		}
-		else if (count > 1)
+		if (wildcard_matches[1])
 		{
 			free_args(wildcard_matches);
 			return (NULL);
 		}
+		result = ft_strdup(wildcard_matches[0]);
 		free_args(wildcard_matches);
+		return (result);
 	}
-	return (ft_strdup(filename));
+	return (remove_quote_markers(filename));
 }
 
 t_ast_node	*create_redirect_node(t_token **tokens)

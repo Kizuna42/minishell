@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:11:43 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/25 21:27:14 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,9 @@ char			*ft_strtok(char *str, const char *delim);
 void			restore_std_fds(t_minishell *shell);
 int				handle_readline_input(t_minishell *shell, char *input);
 void			process_input(char *input, t_minishell *shell);
+char			*expand_variables_split(char *str, t_minishell *shell);
+char			*extract_quoted_string_split(char *str, int *i);
+void			process_variable(char **result, int *i, t_minishell *shell);
 
 /* リダイレクション関数 */
 int				handle_input_redirect(char *filename);
