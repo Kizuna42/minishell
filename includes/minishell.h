@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:56:17 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:17:47 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,8 @@ void			free_env(t_env *env);
 char			*expand_variables(char *str, t_minishell *shell);
 char			**expand_args(char **args, t_minishell *shell);
 char			**expand_variables_array(char **args, t_minishell *shell);
+char			*expand_tilde(char *str, t_minishell *shell);
+char			**expand_tilde_array(char **args, t_minishell *shell);
 char			*remove_quote_markers(char *str);
 void			free_args(char **args);
 char			**remove_empty_args(char **args);
@@ -199,6 +201,7 @@ int				handle_input_loop(t_minishell *shell);
 char			*expand_variables_split(char *str, t_minishell *shell);
 char			*extract_quoted_string_split(char *str, int *i);
 void			process_variable(char **result, int *i, t_minishell *shell);
+void			handle_dollar_quote(char **result, int *i);
 
 /* リダイレクション関数 */
 int				handle_input_redirect(char *filename);
@@ -218,6 +221,7 @@ void			print_error(char *cmd, char *msg);
 void			perror_exit(char *msg);
 int				handle_directory_error(char *command);
 int				handle_permission_error(char *command);
+int				is_valid_n_flag(char *arg);
 
 # ifdef BONUS
 

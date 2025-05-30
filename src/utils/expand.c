@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:26:51 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 18:17:52 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,16 @@ char	*expand_variables(char *str, t_minishell *shell)
 
 char	**expand_args(char **args, t_minishell *shell)
 {
+	char	**tilde_expanded;
 	char	**expanded_args;
 	char	**wildcard_expanded;
 	char	**filtered_args;
 
-	expanded_args = expand_variables_array(args, shell);
+	tilde_expanded = expand_tilde_array(args, shell);
+	if (!tilde_expanded)
+		return (NULL);
+	expanded_args = expand_variables_array(tilde_expanded, shell);
+	free_args(tilde_expanded);
 	if (!expanded_args)
 		return (NULL);
 	wildcard_expanded = expand_with_wildcards(expanded_args);

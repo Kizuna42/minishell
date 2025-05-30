@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/25 21:44:40 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/30 19:18:36 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,6 +52,9 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/expand.c \
 		$(SRCDIR)/utils/expand_utils.c \
 		$(SRCDIR)/utils/expand_split.c \
+		$(SRCDIR)/utils/expand_tilde.c \
+		$(SRCDIR)/utils/expand_dollar_quote.c \
+		$(SRCDIR)/utils/echo_utils.c \
 		$(SRCDIR)/utils/path_utils.c \
 		$(SRCDIR)/utils/args_utils.c \
 		$(SRCDIR)/utils/export_utils.c \

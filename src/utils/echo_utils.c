@@ -1,25 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error_utils.c                                      :+:      :+:    :+:   */
+/*   echo_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 19:13:44 by kizuna           ###   ########.fr       */
+/*   Created: 2025/05/30 19:18:00 by kizuna            #+#    #+#             */
+/*   Updated: 2025/05/30 19:17:37 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	handle_directory_error(char *command)
+int	is_valid_n_flag(char *arg)
 {
-	print_error(command, "is a directory");
-	return (126);
-}
+	int	i;
 
-int	handle_permission_error(char *command)
-{
-	print_error(command, "Permission denied");
-	return (126);
+	if (!arg || arg[0] != '-' || !arg[1])
+		return (0);
+	i = 1;
+	while (arg[i])
+	{
+		if (arg[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
 }
