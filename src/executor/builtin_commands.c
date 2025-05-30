@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 20:53:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:18:09 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,10 @@ int	builtin_echo(char **args)
 
 	newline = 1;
 	i = 1;
-	if (args[1] && ft_strncmp(args[1], "-n", 2) == 0
-		&& ft_strlen(args[1]) == 2)
+	while (args[i] && is_valid_n_flag(args[i]))
 	{
 		newline = 0;
-		i = 2;
+		i++;
 	}
 	while (args[i])
 	{

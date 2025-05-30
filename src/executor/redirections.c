@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:36:07 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:18:59 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,20 +55,20 @@ int	handle_output_redirect(char *filename, int append)
 	return (0);
 }
 
-int	handle_heredoc(char *delimiter)
+static int	read_heredoc_lines(int pipefd[2], char *delimiter)
 {
-	int		pipefd[2];
 	char	*line;
+	char	*trimmed_delimiter;
 
-	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return (1);
-	}
+	trimmed_delimiter = remove_quote_markers(delimiter);
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
+		if (!line)
+			break ;
+		if (ft_strncmp(line, trimmed_delimiter,
+				ft_strlen(trimmed_delimiter)) == 0
+			&& ft_strlen(line) == ft_strlen(trimmed_delimiter))
 		{
 			free(line);
 			break ;
@@ -77,6 +77,20 @@ int	handle_heredoc(char *delimiter)
 		write(pipefd[1], "\n", 1);
 		free(line);
 	}
+	free(trimmed_delimiter);
+	return (0);
+}
+
+int	handle_heredoc(char *delimiter)
+{
+	int		pipefd[2];
+
+	if (pipe(pipefd) == -1)
+	{
+		perror("pipe");
+		return (1);
+	}
+	read_heredoc_lines(pipefd, delimiter);
 	close(pipefd[1]);
 	dup2(pipefd[0], STDIN_FILENO);
 	close(pipefd[0]);
