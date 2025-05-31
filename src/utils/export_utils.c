@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 20:50:51 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 02:48:39 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,21 +76,27 @@ int	process_export_arg(char *arg, t_minishell *shell)
 
 int	print_export_env(t_minishell *shell)
 {
-	t_env	*current;
+	t_env	**env_array;
+	int		count;
+	int		i;
 
-	current = shell->env_list;
-	while (current)
+	env_array = create_sorted_env_array(shell, &count);
+	if (!env_array)
+		return (1);
+	i = 0;
+	while (i < count)
 	{
 		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		ft_putstr_fd(current->key, STDOUT_FILENO);
-		if (current->value)
+		ft_putstr_fd(env_array[i]->key, STDOUT_FILENO);
+		if (env_array[i]->value)
 		{
 			ft_putstr_fd("=\"", STDOUT_FILENO);
-			ft_putstr_fd(current->value, STDOUT_FILENO);
+			ft_putstr_fd(env_array[i]->value, STDOUT_FILENO);
 			ft_putstr_fd("\"", STDOUT_FILENO);
 		}
 		ft_putstr_fd("\n", STDOUT_FILENO);
-		current = current->next;
+		i++;
 	}
+	free(env_array);
 	return (0);
 }
