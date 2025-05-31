@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:35:57 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:24:45 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,14 @@ static t_node_type	get_redirect_node_type(t_token_type token_type)
 		return (NODE_REDIRECT_HEREDOC);
 }
 
-static char	*expand_redirect_filename(char *filename)
+static char	*expand_redirect_filename(char *filename,
+	t_token_type redirect_type)
 {
 	char	**wildcard_matches;
 	char	*result;
 
+	if (redirect_type == TOKEN_REDIRECT_HEREDOC)
+		return (ft_strdup(filename));
 	if (ft_strchr(filename, '*') && !ft_strchr(filename, '\x01')
 		&& !ft_strchr(filename, '\x02'))
 	{
@@ -67,7 +70,8 @@ t_ast_node	*create_redirect_node(t_token **tokens)
 		return (NULL);
 	if (*tokens && (*tokens)->type == TOKEN_WORD)
 	{
-		redirect_node->filename = expand_redirect_filename((*tokens)->value);
+		redirect_node->filename = expand_redirect_filename((*tokens)->value,
+				redirect_type);
 		if (!redirect_node->filename)
 		{
 			free(redirect_node);

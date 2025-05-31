@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 19:03:52 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:28:33 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,4 +101,22 @@ int	builtin_exit(char **args, t_minishell *shell)
 	exit_code = (unsigned char)num;
 	cleanup_minishell(shell);
 	exit(exit_code);
+}
+
+int	builtin_export(char **args, t_minishell *shell)
+{
+	int	i;
+	int	exit_status;
+
+	if (!args[1])
+		return (print_export_env(shell));
+	i = 1;
+	exit_status = 0;
+	while (args[i])
+	{
+		if (process_export_arg(args[i], shell))
+			exit_status = 1;
+		i++;
+	}
+	return (exit_status);
 }

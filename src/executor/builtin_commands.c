@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 19:59:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:29:06 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,26 @@ int	builtin_pwd(void)
 	return (0);
 }
 
+static void	update_pwd_env(char *old_pwd, t_minishell *shell)
+{
+	char	*new_pwd;
+
+	new_pwd = getcwd(NULL, 0);
+	if (new_pwd)
+	{
+		if (old_pwd)
+			set_env_value("OLDPWD", old_pwd, shell);
+		set_env_value("PWD", new_pwd, shell);
+		free(new_pwd);
+	}
+}
+
 int	builtin_cd(char **args, t_minishell *shell)
 {
 	char	*path;
+	char	*old_pwd;
 
+	old_pwd = get_env_value("PWD", shell);
 	if (!args[1])
 		path = get_env_value("HOME", shell);
 	else
@@ -70,6 +86,7 @@ int	builtin_cd(char **args, t_minishell *shell)
 		perror("cd");
 		return (1);
 	}
+	update_pwd_env(old_pwd, shell);
 	return (0);
 }
 
@@ -95,22 +112,4 @@ int	builtin_env(char **args, t_minishell *shell)
 		current = current->next;
 	}
 	return (0);
-}
-
-int	builtin_export(char **args, t_minishell *shell)
-{
-	int	i;
-	int	exit_status;
-
-	if (!args[1])
-		return (print_export_env(shell));
-	i = 1;
-	exit_status = 0;
-	while (args[i])
-	{
-		if (process_export_arg(args[i], shell))
-			exit_status = 1;
-		i++;
-	}
-	return (exit_status);
 }
