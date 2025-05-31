@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 19:30:49 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 03:49:35 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ t_token_type	get_operator_type(char *str, int *advance)
 		return (TOKEN_RPAREN);
 	else if (str[0] == ';')
 		return (TOKEN_SEMICOLON);
+	else if (str[0] == '&')
+		return (TOKEN_BACKGROUND);
 	return (TOKEN_WORD);
 }
 

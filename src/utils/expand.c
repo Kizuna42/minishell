@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 22:52:12 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 03:16:52 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static char	*get_var_name(char *str, int *i)
 		return (ft_strdup("$"));
 	}
 	if (!ft_isalnum(str[*i]) && str[*i] != '_')
-		return (ft_strdup(""));
+		return (NULL);
 	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
 	return (ft_substr(str, start, *i - start));

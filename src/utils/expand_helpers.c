@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 20:19:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:19:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 03:16:52 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,9 @@
 
 int	handle_invalid_var(char **result, char *var_name, int dollar_pos, int *i)
 {
-	if (!var_name || (ft_strlen(var_name) == 0 && (*result)[*i] != '?'
-		&& (*result)[*i] != '$'))
+	(void)result;
+	if (!var_name)
 	{
-		if (var_name)
-			free(var_name);
 		*i = dollar_pos + 1;
 		return (1);
 	}

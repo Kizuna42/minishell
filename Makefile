@@ -6,20 +6,23 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/06/01 02:48:30 by kizuna           ###   ########.fr        #
+#    Updated: 2025/06/01 04:08:26 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
+BONUS_NAME = minishell_bonus
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -I./includes -I./libft
+BONUS_CFLAGS = -Wall -Wextra -Werror -I./includes -I./libft -DBONUS
 LDFLAGS = -lreadline
 
 # Directories
 SRCDIR = src
 INCDIR = includes
 OBJDIR = obj
+BONUS_OBJDIR = obj_bonus
 LIBFTDIR = libft
 
 # Source files
@@ -32,6 +35,8 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/parser/parser.c \
 		$(SRCDIR)/parser/parser_utils.c \
 		$(SRCDIR)/parser/parser_syntax.c \
+		$(SRCDIR)/parser/parser_syntax_utils.c \
+		$(SRCDIR)/parser/parser_token_utils.c \
 		$(SRCDIR)/parser/parser_logical.c \
 		$(SRCDIR)/parser/parser_redirect.c \
 		$(SRCDIR)/parser/parser_redirect_mixed.c \
@@ -66,15 +71,18 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/error_utils.c \
 		$(SRCDIR)/utils/wildcard.c \
 		$(SRCDIR)/utils/wildcard_expand.c \
+		$(SRCDIR)/utils/wildcard_utils.c \
+		$(SRCDIR)/utils/env_utils2.c \
 		$(SRCDIR)/parser/parser_command.c
 
 # Bonus source files
-BONUS_SRCS = $(SRCDIR)/bonus/logical_ops.c \
+BONUS_SRCS = $(SRCS) \
+			$(SRCDIR)/bonus/logical_ops.c \
 			$(SRCDIR)/bonus/wildcards.c
 
 # Object files
 OBJS = $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
-BONUS_OBJS = $(BONUS_SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+BONUS_OBJS = $(BONUS_SRCS:$(SRCDIR)/%.c=$(BONUS_OBJDIR)/%.o)
 
 # Libraries
 LIBFT = $(LIBFTDIR)/libft.a
@@ -100,19 +108,26 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo "Compiling $<..."
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-bonus: $(LIBFT) $(OBJS) $(BONUS_OBJS)
-	@echo "$(GREEN)Linking $(NAME) with bonus...$(RESET)"
-	@$(CC) $(CFLAGS) $(OBJS) $(BONUS_OBJS) $(LIBFT) $(LDFLAGS) -o $(NAME)
-	@echo "$(GREEN)$(NAME) with bonus created successfully!$(RESET)"
+$(BONUS_OBJDIR)/%.o: $(SRCDIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "Compiling $< (bonus)..."
+	@$(CC) $(BONUS_CFLAGS) -c $< -o $@
+
+bonus: $(LIBFT) $(BONUS_OBJS)
+	@echo "$(GREEN)Linking $(BONUS_NAME)...$(RESET)"
+	@$(CC) $(BONUS_CFLAGS) $(BONUS_OBJS) $(LIBFT) $(LDFLAGS) -o $(BONUS_NAME)
+	@echo "$(GREEN)$(BONUS_NAME) created successfully!$(RESET)"
 
 clean:
 	@echo "$(RED)Cleaning object files...$(RESET)"
 	@rm -rf $(OBJDIR)
+	@rm -rf $(BONUS_OBJDIR)
 	@$(MAKE) -C $(LIBFTDIR) clean
 
 fclean: clean
-	@echo "$(RED)Cleaning $(NAME)...$(RESET)"
+	@echo "$(RED)Cleaning $(NAME) and $(BONUS_NAME)...$(RESET)"
 	@rm -f $(NAME)
+	@rm -f $(BONUS_NAME)
 	@$(MAKE) -C $(LIBFTDIR) fclean
 
 re: fclean all

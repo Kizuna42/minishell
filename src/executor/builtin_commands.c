@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 02:33:58 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 03:40:41 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,6 @@ int	builtin_cd(char **args, t_minishell *shell)
 
 	if (args[1] && ft_strncmp(args[1], "-", 1) == 0 && ft_strlen(args[1]) == 1)
 		return (handle_cd_dash(shell));
-	if (args[1] && args[2])
-	{
-		print_error("cd", "too many arguments");
-		return (1);
-	}
 	old_pwd = get_env_value("PWD", shell);
 	if (!args[1])
 		path = get_env_value("HOME", shell);

@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 21:08:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 04:09:02 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,19 @@ static int	match_pattern(char *str, char *pattern)
 	return (0);
 }
 
-static void	sort_matches(char **matches, int count)
+static void	swap_strings(char **a, char **b)
+{
+	char	*temp;
+
+	temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void	sort_matches(char **matches, int count)
 {
 	int		i;
 	int		j;
-	char	*temp;
 	int		len1;
 	int		len2;
 	int		max_len;
@@ -52,87 +60,24 @@ static void	sort_matches(char **matches, int count)
 		{
 			len1 = ft_strlen(matches[i]);
 			len2 = ft_strlen(matches[j]);
-			max_len = (len1 > len2) ? len1 : len2;
+			max_len = len1;
+			if (len2 > len1)
+				max_len = len2;
 			if (ft_strncmp(matches[i], matches[j], max_len) > 0)
-			{
-				temp = matches[i];
-				matches[i] = matches[j];
-				matches[j] = temp;
-			}
+				swap_strings(&matches[i], &matches[j]);
 			j++;
 		}
 		i++;
 	}
 }
 
-static int	count_matches(char *pattern)
+int	should_match_entry(char *pattern, char *entry_name)
 {
-	DIR				*dir;
-	struct dirent	*entry;
-	int				count;
-
-	dir = opendir(".");
-	if (!dir)
-		return (0);
-	count = 0;
-	entry = readdir(dir);
-	while (entry != NULL)
-	{
-		if (pattern[0] == '.' && entry->d_name[0] == '.')
-		{
-			if (match_pattern(entry->d_name, pattern))
-				count++;
-		}
-		else if (pattern[0] != '.' && entry->d_name[0] != '.')
-		{
-			if (match_pattern(entry->d_name, pattern))
-				count++;
-		}
-		entry = readdir(dir);
-	}
-	closedir(dir);
-	return (count);
-}
-
-static void	process_directory_entry(struct dirent *entry, char *pattern,
-	char **matches, int *i)
-{
-	if (pattern[0] == '.' && entry->d_name[0] == '.')
-	{
-		if (match_pattern(entry->d_name, pattern))
-			matches[(*i)++] = ft_strdup(entry->d_name);
-	}
-	else if (pattern[0] != '.' && entry->d_name[0] != '.')
-	{
-		if (match_pattern(entry->d_name, pattern))
-			matches[(*i)++] = ft_strdup(entry->d_name);
-	}
-}
-
-static char	**fill_matches(char *pattern, int count)
-{
-	DIR				*dir;
-	struct dirent	*entry;
-	char			**matches;
-	int				i;
-
-	matches = malloc(sizeof(char *) * (count + 1));
-	if (!matches)
-		return (NULL);
-	dir = opendir(".");
-	if (!dir)
-		return (NULL);
-	i = 0;
-	entry = readdir(dir);
-	while (entry != NULL && i < count)
-	{
-		process_directory_entry(entry, pattern, matches, &i);
-		entry = readdir(dir);
-	}
-	matches[i] = NULL;
-	closedir(dir);
-	sort_matches(matches, i);
-	return (matches);
+	if (pattern[0] == '.' && entry_name[0] == '.')
+		return (match_pattern(entry_name, pattern));
+	else if (pattern[0] != '.' && entry_name[0] != '.')
+		return (match_pattern(entry_name, pattern));
+	return (0);
 }
 
 char	**expand_wildcard(char *pattern)

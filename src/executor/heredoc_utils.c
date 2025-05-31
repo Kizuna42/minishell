@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 19:35:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:23:55 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 03:54:36 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ int	read_heredoc_lines(int pipefd[2], char *delimiter, t_minishell *shell)
 		line = read_heredoc_input();
 		if (!line)
 		{
-			print_heredoc_warning(trimmed_delimiter);
+			if (!ft_strchr(trimmed_delimiter, '*'))
+				print_heredoc_warning(trimmed_delimiter);
 			break ;
 		}
 		if (ft_strncmp(line, trimmed_delimiter,
