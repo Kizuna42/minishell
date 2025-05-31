@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:05:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 21:09:03 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*find_command_path(char *command, t_minishell *shell)
 	if (ft_strchr(command, '/'))
 		return (check_absolute_path(command));
 	path_env = get_env_value("PATH", shell);
-	if (!path_env)
+	if (!path_env || !*path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');
 	if (!paths)

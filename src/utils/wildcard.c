@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:17:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 21:08:46 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,36 @@ static int	match_pattern(char *str, char *pattern)
 	return (0);
 }
 
+static void	sort_matches(char **matches, int count)
+{
+	int		i;
+	int		j;
+	char	*temp;
+	int		len1;
+	int		len2;
+	int		max_len;
+
+	i = 0;
+	while (i < count - 1)
+	{
+		j = i + 1;
+		while (j < count)
+		{
+			len1 = ft_strlen(matches[i]);
+			len2 = ft_strlen(matches[j]);
+			max_len = (len1 > len2) ? len1 : len2;
+			if (ft_strncmp(matches[i], matches[j], max_len) > 0)
+			{
+				temp = matches[i];
+				matches[i] = matches[j];
+				matches[j] = temp;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
 static int	count_matches(char *pattern)
 {
 	DIR				*dir;
@@ -48,13 +78,16 @@ static int	count_matches(char *pattern)
 	entry = readdir(dir);
 	while (entry != NULL)
 	{
-		if (entry->d_name[0] == '.')
+		if (pattern[0] == '.' && entry->d_name[0] == '.')
 		{
-			entry = readdir(dir);
-			continue ;
+			if (match_pattern(entry->d_name, pattern))
+				count++;
 		}
-		if (match_pattern(entry->d_name, pattern))
-			count++;
+		else if (pattern[0] != '.' && entry->d_name[0] != '.')
+		{
+			if (match_pattern(entry->d_name, pattern))
+				count++;
+		}
 		entry = readdir(dir);
 	}
 	closedir(dir);
@@ -64,8 +97,16 @@ static int	count_matches(char *pattern)
 static void	process_directory_entry(struct dirent *entry, char *pattern,
 	char **matches, int *i)
 {
-	if (entry->d_name[0] != '.' && match_pattern(entry->d_name, pattern))
-		matches[(*i)++] = ft_strdup(entry->d_name);
+	if (pattern[0] == '.' && entry->d_name[0] == '.')
+	{
+		if (match_pattern(entry->d_name, pattern))
+			matches[(*i)++] = ft_strdup(entry->d_name);
+	}
+	else if (pattern[0] != '.' && entry->d_name[0] != '.')
+	{
+		if (match_pattern(entry->d_name, pattern))
+			matches[(*i)++] = ft_strdup(entry->d_name);
+	}
 }
 
 static char	**fill_matches(char *pattern, int count)
@@ -90,6 +131,7 @@ static char	**fill_matches(char *pattern, int count)
 	}
 	matches[i] = NULL;
 	closedir(dir);
+	sort_matches(matches, i);
 	return (matches);
 }
 

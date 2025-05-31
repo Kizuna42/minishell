@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 19:32:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 19:48:29 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 21:07:56 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,5 @@ int	should_free_var_value(char *var_name)
 
 int	should_skip_variable(char *result, int i)
 {
-	return (result[i] == '"' || result[i] == '\x02'
-		|| result[i] == '\'' || result[i] == '\x01');
+	return (result[i] == '\x01');
 }
