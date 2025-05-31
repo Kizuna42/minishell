@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 18:17:52 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:39:32 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void	process_variable(char **result, int *i, t_minishell *shell)
 	char	*var_name;
 	char	*var_value;
 	int		dollar_pos;
+	int		is_exit_status;
 
 	dollar_pos = *i;
 	(*i)++;
@@ -65,9 +66,12 @@ void	process_variable(char **result, int *i, t_minishell *shell)
 		*i = dollar_pos + 1;
 		return ;
 	}
+	is_exit_status = (ft_strncmp(var_name, "?", 1) == 0);
 	var_value = get_env_value(var_name, shell);
 	*result = replace_var(*result, var_name, var_value, dollar_pos);
 	free(var_name);
+	if (is_exit_status && var_value)
+		free(var_value);
 	if (var_value)
 		*i = dollar_pos + ft_strlen(var_value);
 	else

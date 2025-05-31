@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 19:17:47 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:30:37 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_HEREDOC,
 	TOKEN_AND,
 	TOKEN_OR,
+	TOKEN_SEMICOLON,
 	TOKEN_LPAREN,
 	TOKEN_RPAREN,
 	TOKEN_EOF
@@ -77,6 +78,7 @@ typedef enum e_node_type
 	NODE_REDIRECT_HEREDOC,
 	NODE_AND,
 	NODE_OR,
+	NODE_SEMICOLON,
 	NODE_SUBSHELL
 }	t_node_type;
 

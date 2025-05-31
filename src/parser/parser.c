@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:04:48 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:30:57 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ static t_node_type	token_to_node_type(t_token_type type)
 		return (NODE_AND);
 	else if (type == TOKEN_OR)
 		return (NODE_OR);
+	else if (type == TOKEN_SEMICOLON)
+		return (NODE_SEMICOLON);
 	return (NODE_COMMAND);
 }
 
