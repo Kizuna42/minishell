@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 19:44:21 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 19:59:57 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	execute_builtin(char **args, t_minishell *shell)
 	else if (ft_strncmp(args[0], "unset", 5) == 0 && ft_strlen(args[0]) == 5)
 		return (builtin_unset(args, shell));
 	else if (ft_strncmp(args[0], "env", 3) == 0 && ft_strlen(args[0]) == 3)
-		return (builtin_env(shell));
+		return (builtin_env(args, shell));
 	else if (ft_strncmp(args[0], "exit", 4) == 0 && ft_strlen(args[0]) == 4)
 		return (builtin_exit(args, shell));
 	return (1);

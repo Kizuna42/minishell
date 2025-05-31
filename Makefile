@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/30 19:18:36 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/31 19:35:50 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,6 +43,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/executor/builtin_extra.c \
 		$(SRCDIR)/executor/redirections.c \
 		$(SRCDIR)/executor/redirect_utils.c \
+		$(SRCDIR)/executor/heredoc_utils.c \
 		$(SRCDIR)/executor/pipes.c \
 		$(SRCDIR)/utils/utils.c \
 		$(SRCDIR)/utils/env_utils.c \
@@ -50,6 +51,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/signal_utils.c \
 		$(SRCDIR)/utils/cleanup.c \
 		$(SRCDIR)/utils/expand.c \
+		$(SRCDIR)/utils/expand_vars.c \
 		$(SRCDIR)/utils/expand_utils.c \
 		$(SRCDIR)/utils/expand_split.c \
 		$(SRCDIR)/utils/expand_tilde.c \

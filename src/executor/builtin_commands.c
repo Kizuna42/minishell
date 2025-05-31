@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 19:18:09 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 19:59:46 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,15 @@ int	builtin_cd(char **args, t_minishell *shell)
 	return (0);
 }
 
-int	builtin_env(t_minishell *shell)
+int	builtin_env(char **args, t_minishell *shell)
 {
 	t_env	*current;
 
+	if (args[1])
+	{
+		print_error("env", "too many arguments");
+		return (1);
+	}
 	current = shell->env_list;
 	while (current)
 	{

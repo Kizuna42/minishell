@@ -6,13 +6,13 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 18:29:08 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 19:35:42 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static int	execute_single_redirect(t_ast_node *redirect)
+static int	execute_single_redirect(t_ast_node *redirect, t_minishell *shell)
 {
 	int	result;
 
@@ -24,11 +24,11 @@ static int	execute_single_redirect(t_ast_node *redirect)
 	else if (redirect->type == NODE_REDIRECT_APPEND)
 		result = handle_output_redirect(redirect->filename, 1);
 	else if (redirect->type == NODE_REDIRECT_HEREDOC)
-		result = handle_heredoc(redirect->filename);
+		result = handle_heredoc(redirect->filename, shell);
 	return (result);
 }
 
-int	execute_redirect_list(t_ast_node **redirects, int count)
+int	execute_redirect_list(t_ast_node **redirects, int count, t_minishell *shell)
 {
 	int	i;
 	int	result;
@@ -36,7 +36,7 @@ int	execute_redirect_list(t_ast_node **redirects, int count)
 	i = count - 1;
 	while (i >= 0)
 	{
-		result = execute_single_redirect(redirects[i]);
+		result = execute_single_redirect(redirects[i], shell);
 		if (result != 0)
 			return (result);
 		i--;
