@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:22:38 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:42:51 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,7 @@ int				builtin_export(char **args, t_minishell *shell);
 int				builtin_unset(char **args, t_minishell *shell);
 int				builtin_env(char **args, t_minishell *shell);
 int				builtin_exit(char **args, t_minishell *shell);
+int				builtin_dot(char **args, t_minishell *shell);
 t_env			*init_env(char **envp);
 char			*get_env_value(char *key, t_minishell *shell);
 int				set_env_value(char *key, char *value, t_minishell *shell);
