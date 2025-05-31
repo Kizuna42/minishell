@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 21:09:03 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 03:16:23 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,19 @@ int	check_file_access(char *command)
 	if (access(command, F_OK) != 0)
 		return (127);
 	if (stat(command, &st) == 0 && S_ISDIR(st.st_mode))
-		return (handle_directory_error(command));
+	{
+		if (ft_strchr(command, '/'))
+			return (handle_directory_error(command));
+		else
+			return (127);
+	}
 	if (access(command, X_OK) != 0)
-		return (handle_permission_error(command));
+	{
+		if (ft_strchr(command, '/'))
+			return (handle_permission_error(command));
+		else
+			return (127);
+	}
 	return (0);
 }
 

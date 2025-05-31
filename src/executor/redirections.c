@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 19:37:45 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 04:07:57 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	handle_heredoc(char *delimiter, t_minishell *shell)
 	return (0);
 }
 
-int	execute_redirections(t_ast_node *node, t_minishell *shell)
+static int	execute_redirect_and_command(t_ast_node *node, t_minishell *shell)
 {
 	t_ast_node	*redirects[10];
 	t_ast_node	*cmd_node;
@@ -84,4 +84,17 @@ int	execute_redirections(t_ast_node *node, t_minishell *shell)
 	if (result != 0)
 		return (result);
 	return (execute_ast(cmd_node, shell));
+}
+
+int	execute_redirections(t_ast_node *node, t_minishell *shell)
+{
+	int	saved_stdin;
+	int	saved_stdout;
+	int	result;
+
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	result = execute_redirect_and_command(node, shell);
+	restore_fds(saved_stdin, saved_stdout);
+	return (result);
 }

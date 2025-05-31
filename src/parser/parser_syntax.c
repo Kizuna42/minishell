@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 21:04:01 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 04:05:29 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,7 @@ void	print_syntax_error(char *token)
 	ft_putstr_fd("'\n", STDERR_FILENO);
 }
 
-static int	is_operator_token(t_token_type type)
-{
-	return (type == TOKEN_PIPE || type == TOKEN_REDIRECT_IN
-		|| type == TOKEN_REDIRECT_OUT || type == TOKEN_REDIRECT_APPEND
-		|| type == TOKEN_REDIRECT_HEREDOC || type == TOKEN_AND
-		|| type == TOKEN_OR);
-}
-
-static int	check_pipe_syntax(t_token *token)
+int	check_pipe_syntax(t_token *token)
 {
 	if (!token->next)
 	{
@@ -47,7 +39,7 @@ static int	check_pipe_syntax(t_token *token)
 	return (1);
 }
 
-static int	check_logical_syntax(t_token *token)
+int	check_logical_syntax(t_token *token)
 {
 	if (!token->next)
 	{
@@ -55,7 +47,8 @@ static int	check_logical_syntax(t_token *token)
 		return (0);
 	}
 	if (token->next->type == TOKEN_PIPE || token->next->type == TOKEN_AND
-		|| token->next->type == TOKEN_OR)
+		|| token->next->type == TOKEN_OR
+		|| token->next->type == TOKEN_BACKGROUND)
 	{
 		print_syntax_error(token->next->value);
 		return (0);
@@ -63,7 +56,7 @@ static int	check_logical_syntax(t_token *token)
 	return (1);
 }
 
-static int	check_redirect_syntax(t_token *token)
+int	check_redirect_syntax(t_token *token)
 {
 	if (!token->next || token->next->type != TOKEN_WORD)
 	{
@@ -83,22 +76,11 @@ int	validate_syntax(t_token *tokens)
 	if (!tokens)
 		return (1);
 	current = tokens;
-	if (is_operator_token(current->type) && current->type != TOKEN_REDIRECT_IN
-		&& current->type != TOKEN_REDIRECT_OUT
-		&& current->type != TOKEN_REDIRECT_APPEND
-		&& current->type != TOKEN_REDIRECT_HEREDOC)
-	{
-		print_syntax_error(current->value);
+	if (!check_first_token(current))
 		return (0);
-	}
 	while (current)
 	{
-		if (current->type == TOKEN_PIPE && !check_pipe_syntax(current))
-			return (0);
-		if ((current->type == TOKEN_AND || current->type == TOKEN_OR)
-			&& !check_logical_syntax(current))
-			return (0);
-		if (is_redirect_token(current->type) && !check_redirect_syntax(current))
+		if (!validate_token_syntax(current))
 			return (0);
 		current = current->next;
 	}

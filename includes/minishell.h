@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 02:48:31 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 04:07:57 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef enum e_token_type
 	TOKEN_SEMICOLON,
 	TOKEN_LPAREN,
 	TOKEN_RPAREN,
+	TOKEN_BACKGROUND,
 	TOKEN_EOF
 }	t_token_type;
 typedef struct s_token
@@ -70,7 +71,8 @@ typedef enum e_node_type
 	NODE_AND,
 	NODE_OR,
 	NODE_SEMICOLON,
-	NODE_SUBSHELL
+	NODE_SUBSHELL,
+	NODE_BACKGROUND
 }	t_node_type;
 typedef struct s_ast_node
 {
@@ -207,6 +209,17 @@ int				count_backslashes(char *str, int start);
 void			process_backslashes(char **result, int *i);
 void			handle_backslash(char **result, int *i, t_minishell *shell);
 void			update_pwd_env(char *old_pwd, t_minishell *shell);
+int				check_first_token(t_token *current);
+int				validate_token_syntax(t_token *current);
+int				check_pipe_syntax(t_token *token);
+int				check_logical_syntax(t_token *token);
+int				check_redirect_syntax(t_token *token);
+int				is_operator_token(t_token_type type);
+void			sort_matches(char **matches, int count);
+int				should_match_entry(char *pattern, char *entry_name);
+int				count_matches(char *pattern);
+char			**fill_matches(char *pattern, int count);
+void			restore_fds(int saved_stdin, int saved_stdout);
 
 # ifdef BONUS
 

@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 22:48:55 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 03:51:10 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	execute_ast(t_ast_node *ast, t_minishell *shell)
 		&& ast->type <= NODE_REDIRECT_HEREDOC)
 		return (execute_redirections(ast, shell));
 	else if (ast->type == NODE_AND || ast->type == NODE_OR
-		|| ast->type == NODE_SEMICOLON)
+		|| ast->type == NODE_SEMICOLON || ast->type == NODE_BACKGROUND)
 		return (execute_logical_ops(ast, shell));
 	return (0);
 }
@@ -95,9 +95,8 @@ int	execute_command(t_ast_node *node, t_minishell *shell)
 		return (1);
 	if (!expanded_args[0] || !*expanded_args[0])
 	{
-		print_error("", "command not found");
 		free_args(expanded_args);
-		return (127);
+		return (0);
 	}
 	if (is_builtin(expanded_args[0]))
 		return (handle_builtin_cmd(expanded_args, shell));
