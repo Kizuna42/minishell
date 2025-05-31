@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 19:59:57 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:40:07 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int	is_builtin(char *command)
 		return (1);
 	if (ft_strncmp(command, "exit", 4) == 0 && ft_strlen(command) == 4)
 		return (1);
+	if (ft_strncmp(command, ".", 1) == 0 && ft_strlen(command) == 1)
+		return (1);
 	return (0);
 }
 
@@ -51,5 +53,7 @@ int	execute_builtin(char **args, t_minishell *shell)
 		return (builtin_env(args, shell));
 	else if (ft_strncmp(args[0], "exit", 4) == 0 && ft_strlen(args[0]) == 4)
 		return (builtin_exit(args, shell));
+	else if (ft_strncmp(args[0], ".", 1) == 0 && ft_strlen(args[0]) == 1)
+		return (builtin_dot(args, shell));
 	return (1);
 }

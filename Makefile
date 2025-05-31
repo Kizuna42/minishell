@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/05/31 20:19:45 by kizuna           ###   ########.fr        #
+#    Updated: 2025/05/31 20:41:14 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/executor/builtin.c \
 		$(SRCDIR)/executor/builtin_commands.c \
 		$(SRCDIR)/executor/builtin_extra.c \
+		$(SRCDIR)/executor/builtin_dot.c \
 		$(SRCDIR)/executor/redirections.c \
 		$(SRCDIR)/executor/redirect_utils.c \
 		$(SRCDIR)/executor/heredoc_utils.c \
