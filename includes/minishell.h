@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:02:53 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:19:09 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,11 @@
 # define PROMPT "minishell$ "
 # define MAX_PATH 4096
 # define BUFFER_SIZE 1024
-
-/* クォートタイプ */
 # define QUOTE_NONE 0
 # define QUOTE_SINGLE 1
 # define QUOTE_DOUBLE 2
 
-/* グローバル変数（シグナル状態のみ） */
 extern volatile sig_atomic_t	g_signal_status;
-
-/* トークンタイプ */
 typedef enum e_token_type
 {
 	TOKEN_WORD,
@@ -57,8 +52,6 @@ typedef enum e_token_type
 	TOKEN_RPAREN,
 	TOKEN_EOF
 }	t_token_type;
-
-/* トークン構造体 */
 typedef struct s_token
 {
 	t_token_type		type;
@@ -66,8 +59,6 @@ typedef struct s_token
 	int					quote_type;
 	struct s_token		*next;
 }	t_token;
-
-/* ASTノードタイプ */
 typedef enum e_node_type
 {
 	NODE_COMMAND,
@@ -81,8 +72,6 @@ typedef enum e_node_type
 	NODE_SEMICOLON,
 	NODE_SUBSHELL
 }	t_node_type;
-
-/* ASTノード構造体 */
 typedef struct s_ast_node
 {
 	t_node_type			type;
@@ -91,16 +80,12 @@ typedef struct s_ast_node
 	struct s_ast_node	*left;
 	struct s_ast_node	*right;
 }	t_ast_node;
-
-/* 環境変数構造体 */
 typedef struct s_env
 {
 	char			*key;
 	char			*value;
 	struct s_env	*next;
 }	t_env;
-
-/* minishellのメイン構造体 */
 typedef struct s_minishell
 {
 	t_env		*env_list;
@@ -109,8 +94,6 @@ typedef struct s_minishell
 	int			stdin_backup;
 	int			stdout_backup;
 }	t_minishell;
-
-/* レキサー関数 */
 t_token			*tokenize(char *input);
 t_token			*create_token(t_token_type type, char *value);
 t_token			*create_token_with_quote(t_token_type type, char *value,
@@ -124,8 +107,6 @@ t_token_type	get_operator_type(char *str, int *advance);
 void			process_token(char *input, int *i,
 					t_token **tokens, int advance);
 char			*extract_word(char *str, int *i);
-
-/* パーサー関数 */
 t_ast_node		*parse(t_token *tokens);
 t_ast_node		*parse_logical_ops(t_token **tokens);
 t_ast_node		*parse_pipeline(t_token **tokens);
@@ -145,8 +126,6 @@ void			cleanup_on_error(char **args, int i, t_ast_node *cmd);
 void			finalize_command_args(t_ast_node *cmd, char **args, int i);
 int				validate_syntax(t_token *tokens);
 void			print_syntax_error(char *token);
-
-/* エグゼキューター関数 */
 int				execute_ast(t_ast_node *ast, t_minishell *shell);
 int				execute_command(t_ast_node *node, t_minishell *shell);
 int				execute_pipeline(t_ast_node *node, t_minishell *shell);
@@ -154,8 +133,6 @@ int				execute_redirections(t_ast_node *node, t_minishell *shell);
 int				execute_logical_ops(t_ast_node *node, t_minishell *shell);
 char			*find_command_path(char *command, t_minishell *shell);
 int				check_file_access(char *command);
-
-/* ビルトイン関数 */
 int				is_builtin(char *command);
 int				execute_builtin(char **args, t_minishell *shell);
 int				builtin_echo(char **args);
@@ -165,16 +142,12 @@ int				builtin_export(char **args, t_minishell *shell);
 int				builtin_unset(char **args, t_minishell *shell);
 int				builtin_env(char **args, t_minishell *shell);
 int				builtin_exit(char **args, t_minishell *shell);
-
-/* 環境変数関数 */
 t_env			*init_env(char **envp);
 char			*get_env_value(char *key, t_minishell *shell);
 int				set_env_value(char *key, char *value, t_minishell *shell);
 int				unset_env_value(char *key, t_minishell *shell);
 char			**env_to_array(t_minishell *shell);
 void			free_env(t_env *env);
-
-/* ユーティリティ関数 */
 char			*expand_variables(char *str, t_minishell *shell);
 char			**expand_args(char **args, t_minishell *shell);
 char			**expand_variables_array(char **args, t_minishell *shell);
@@ -207,8 +180,6 @@ void			handle_dollar_quote(char **result, int *i);
 char			*get_variable_value(char *var_name, t_minishell *shell);
 int				should_free_var_value(char *var_name);
 int				should_skip_variable(char *result, int i);
-
-/* リダイレクション関数 */
 int				handle_input_redirect(char *filename);
 int				handle_output_redirect(char *filename, int append);
 int				handle_heredoc(char *delimiter, t_minishell *shell);
@@ -219,17 +190,16 @@ t_ast_node		*collect_redirections(t_ast_node *node, t_ast_node **redirects,
 					int *count);
 int				read_heredoc_lines(int pipefd[2], char *delimiter,
 					t_minishell *shell);
-
-/* パイプ関数 */
 int				setup_pipes(int pipefd[2]);
 void			close_pipes(int pipefd[2]);
-
-/* エラーハンドリング */
 void			print_error(char *cmd, char *msg);
 void			perror_exit(char *msg);
 int				handle_directory_error(char *command);
 int				handle_permission_error(char *command);
 int				is_valid_n_flag(char *arg);
+int				handle_invalid_var(char **result, char *var_name,
+					int dollar_pos, int *i);
+void			update_position(int *i, char *var_value, int dollar_pos);
 
 # ifdef BONUS
 

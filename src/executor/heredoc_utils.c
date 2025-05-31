@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 19:35:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:07:32 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:11:26 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,21 @@ static void	process_heredoc_line(int pipefd[2], char *line, char *delimiter,
 	write(pipefd[1], "\n", 1);
 }
 
+static char	*read_heredoc_input(void)
+{
+	char	*line;
+
+	if (isatty(STDIN_FILENO))
+		line = readline("> ");
+	else
+	{
+		line = get_next_line(STDIN_FILENO);
+		if (line && line[ft_strlen(line) - 1] == '\n')
+			line[ft_strlen(line) - 1] = '\0';
+	}
+	return (line);
+}
+
 int	read_heredoc_lines(int pipefd[2], char *delimiter, t_minishell *shell)
 {
 	char	*line;
@@ -46,14 +61,7 @@ int	read_heredoc_lines(int pipefd[2], char *delimiter, t_minishell *shell)
 	trimmed_delimiter = remove_quote_markers(delimiter);
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
-			line = readline("> ");
-		else
-		{
-			line = get_next_line(STDIN_FILENO);
-			if (line && line[ft_strlen(line) - 1] == '\n')
-				line[ft_strlen(line) - 1] = '\0';
-		}
+		line = read_heredoc_input();
 		if (!line)
 		{
 			print_heredoc_warning(trimmed_delimiter);
