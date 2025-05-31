@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 19:31:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:08:42 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,9 @@ int	execute_command(t_ast_node *node, t_minishell *shell)
 		return (1);
 	if (!expanded_args[0] || !*expanded_args[0])
 	{
+		print_error("", "command not found");
 		free_args(expanded_args);
-		return (0);
+		return (127);
 	}
 	if (is_builtin(expanded_args[0]))
 		return (handle_builtin_cmd(expanded_args, shell));
