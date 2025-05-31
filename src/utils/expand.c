@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:11:42 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:19:01 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,47 +73,17 @@ void	process_variable(char **result, int *i, t_minishell *shell)
 	if (should_skip_variable(*result, *i))
 		return ;
 	var_name = get_var_name(*result, i);
-	if (!var_name || (ft_strlen(var_name) == 0 && (*result)[*i] != '?'
-			&& (*result)[*i] != '$'))
-	{
-		if (var_name)
-			free(var_name);
-		*i = dollar_pos + 1;
+	if (handle_invalid_var(result, var_name, dollar_pos, i))
 		return ;
-	}
 	var_value = get_variable_value(var_name, shell);
 	*result = replace_var(*result, var_name, var_value, dollar_pos);
 	if (should_free_var_value(var_name) && var_value)
 		free(var_value);
 	free(var_name);
-	*i = var_value ? dollar_pos + ft_strlen(var_value) : dollar_pos;
+	update_position(i, var_value, dollar_pos);
 }
 
 char	*expand_variables(char *str, t_minishell *shell)
 {
 	return (expand_variables_split(str, shell));
-}
-
-char	**expand_args(char **args, t_minishell *shell)
-{
-	char	**tilde_expanded;
-	char	**expanded_args;
-	char	**wildcard_expanded;
-	char	**filtered_args;
-
-	tilde_expanded = expand_tilde_array(args, shell);
-	if (!tilde_expanded)
-		return (NULL);
-	expanded_args = expand_variables_array(tilde_expanded, shell);
-	free_args(tilde_expanded);
-	if (!expanded_args)
-		return (NULL);
-	wildcard_expanded = expand_with_wildcards(expanded_args);
-	if (!wildcard_expanded)
-		wildcard_expanded = expanded_args;
-	else
-		free_args(expanded_args);
-	filtered_args = remove_empty_args(wildcard_expanded);
-	free_args(wildcard_expanded);
-	return (filtered_args);
 }
