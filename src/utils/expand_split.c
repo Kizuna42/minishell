@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 19:41:39 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:47:15 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,13 @@ static void	process_character(char **result, int *i, int *in_single_quote,
 	if ((*result)[*i] == '\x01' || (*result)[*i] == '\x02')
 	{
 		handle_quote_marker(*result, i, in_single_quote);
+		return ;
+	}
+	if ((*result)[*i] == '\\' && (*result)[*i + 1] == '$'
+		&& !(*in_single_quote))
+	{
+		memmove(*result + *i, *result + *i + 1, ft_strlen(*result + *i));
+		(*i)++;
 		return ;
 	}
 	if ((*result)[*i] == '$' && (*result)[*i + 1] && !(*in_single_quote))
