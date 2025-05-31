@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 22:48:51 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 01:57:05 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,6 +200,9 @@ int				is_valid_n_flag(char *arg);
 int				handle_invalid_var(char **result, char *var_name,
 					int dollar_pos, int *i);
 void			update_position(int *i, char *var_value, int dollar_pos);
+int				count_backslashes(char *str, int start);
+void			process_backslashes(char **result, int *i);
+void			handle_backslash(char **result, int *i, t_minishell *shell);
 
 # ifdef BONUS
 
