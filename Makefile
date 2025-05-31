@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/06/01 02:00:05 by kizuna           ###   ########.fr        #
+#    Updated: 2025/06/01 02:48:30 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,6 +62,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/path_utils.c \
 		$(SRCDIR)/utils/args_utils.c \
 		$(SRCDIR)/utils/export_utils.c \
+		$(SRCDIR)/utils/export_sort.c \
 		$(SRCDIR)/utils/error_utils.c \
 		$(SRCDIR)/utils/wildcard.c \
 		$(SRCDIR)/utils/wildcard_expand.c \

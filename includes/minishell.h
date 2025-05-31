@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 02:34:06 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/01 02:48:31 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,7 @@ int				is_whitespace(char c);
 int				is_valid_identifier(char *str);
 int				process_export_arg(char *arg, t_minishell *shell);
 int				print_export_env(t_minishell *shell);
+t_env			**create_sorted_env_array(t_minishell *shell, int *count);
 char			*ft_strtok(char *str, const char *delim);
 void			restore_std_fds(t_minishell *shell);
 int				handle_readline_input(t_minishell *shell, char *input);
