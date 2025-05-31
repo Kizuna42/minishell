@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 18:32:21 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 19:52:12 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,12 @@ static char	*extract_continuous_word(char *input, int *i)
 	result = ft_strdup("");
 	while (input[*i] && !is_whitespace(input[*i]) && !is_operator(input[*i]))
 	{
-		if (is_quote(input[*i]))
+		if (input[*i] == '$' && is_quote(input[*i + 1]))
+		{
+			(*i)++;
+			part = extract_quoted_string(input, i);
+		}
+		else if (is_quote(input[*i]))
 			part = extract_quoted_string(input, i);
 		else
 			part = extract_word(input, i);

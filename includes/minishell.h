@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 19:30:37 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:02:53 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ int				builtin_cd(char **args, t_minishell *shell);
 int				builtin_pwd(void);
 int				builtin_export(char **args, t_minishell *shell);
 int				builtin_unset(char **args, t_minishell *shell);
-int				builtin_env(t_minishell *shell);
+int				builtin_env(char **args, t_minishell *shell);
 int				builtin_exit(char **args, t_minishell *shell);
 
 /* 環境変数関数 */
@@ -204,15 +204,21 @@ char			*expand_variables_split(char *str, t_minishell *shell);
 char			*extract_quoted_string_split(char *str, int *i);
 void			process_variable(char **result, int *i, t_minishell *shell);
 void			handle_dollar_quote(char **result, int *i);
+char			*get_variable_value(char *var_name, t_minishell *shell);
+int				should_free_var_value(char *var_name);
+int				should_skip_variable(char *result, int i);
 
 /* リダイレクション関数 */
 int				handle_input_redirect(char *filename);
 int				handle_output_redirect(char *filename, int append);
-int				handle_heredoc(char *delimiter);
-int				execute_redirect_list(t_ast_node **redirects, int count);
+int				handle_heredoc(char *delimiter, t_minishell *shell);
+int				execute_redirect_list(t_ast_node **redirects, int count,
+					t_minishell *shell);
 int				is_redirect_node(t_ast_node *node);
 t_ast_node		*collect_redirections(t_ast_node *node, t_ast_node **redirects,
 					int *count);
+int				read_heredoc_lines(int pipefd[2], char *delimiter,
+					t_minishell *shell);
 
 /* パイプ関数 */
 int				setup_pipes(int pipefd[2]);

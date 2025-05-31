@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/30 18:41:40 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 19:41:39 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,7 @@ static void	process_character(char **result, int *i, int *in_single_quote,
 		handle_quote_marker(*result, i, in_single_quote);
 		return ;
 	}
-	if ((*result)[*i] == '$' && ((*result)[*i + 1] == '"'
-			|| (*result)[*i + 1] == '\x02' || (*result)[*i + 1] == '\''
-			|| (*result)[*i + 1] == '\x01') && !(*in_single_quote))
-	{
-		handle_dollar_quote(result, i);
-		return ;
-	}
-	if ((*result)[*i] == '$' && (*result)[*i + 1] && !(*in_single_quote)
-		&& (*result)[*i + 1] != '"' && (*result)[*i + 1] != '\x02'
-		&& (*result)[*i + 1] != '\'' && (*result)[*i + 1] != '\x01')
+	if ((*result)[*i] == '$' && (*result)[*i + 1] && !(*in_single_quote))
 		process_variable(result, i, shell);
 	else
 		(*i)++;
