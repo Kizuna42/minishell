@@ -6,11 +6,12 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 22:44:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 23:21:05 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+#include <string.h>
 
 static void	handle_quote_marker(char *result, int *i, int *in_single_quote)
 {
@@ -40,7 +41,13 @@ static void	process_character(char **result, int *i, int *in_single_quote,
 		(*i)++;
 		return ;
 	}
-	if ((*result)[*i] == '$' && (*result)[*i + 1] && !(*in_single_quote))
+	if ((*result)[*i] == '$' && ((*result)[*i + 1] == '\x02'
+		|| (*result)[*i + 1] == '\x01') && !(*in_single_quote))
+	{
+		memmove(*result + *i, *result + *i + 1, ft_strlen(*result + *i));
+		(*i)++;
+	}
+	else if ((*result)[*i] == '$' && (*result)[*i + 1] && !(*in_single_quote))
 		process_variable(result, i, shell);
 	else
 		(*i)++;
