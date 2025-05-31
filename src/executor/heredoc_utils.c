@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 19:35:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:11:26 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:23:55 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ static void	process_heredoc_line(int pipefd[2], char *line, char *delimiter,
 {
 	char	*expanded_line;
 
-	if (ft_strchr(delimiter, '\'') == NULL
-		&& ft_strchr(delimiter, '"') == NULL)
+	if (ft_strchr(delimiter, '\x01') == NULL
+		&& ft_strchr(delimiter, '\x02') == NULL)
 	{
 		expanded_line = expand_variables(line, shell);
 		write(pipefd[1], expanded_line, ft_strlen(expanded_line));
