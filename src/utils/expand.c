@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 20:06:30 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 20:11:42 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,15 +73,11 @@ void	process_variable(char **result, int *i, t_minishell *shell)
 	if (should_skip_variable(*result, *i))
 		return ;
 	var_name = get_var_name(*result, i);
-	if (!var_name)
+	if (!var_name || (ft_strlen(var_name) == 0 && (*result)[*i] != '?'
+			&& (*result)[*i] != '$'))
 	{
-		*i = dollar_pos + 1;
-		return ;
-	}
-	if (ft_strlen(var_name) == 0 && (*result)[*i] != '?'
-		&& (*result)[*i] != '$')
-	{
-		free(var_name);
+		if (var_name)
+			free(var_name);
 		*i = dollar_pos + 1;
 		return ;
 	}
@@ -90,10 +86,7 @@ void	process_variable(char **result, int *i, t_minishell *shell)
 	if (should_free_var_value(var_name) && var_value)
 		free(var_value);
 	free(var_name);
-	if (var_value)
-		*i = dollar_pos + ft_strlen(var_value);
-	else
-		*i = dollar_pos;
+	*i = var_value ? dollar_pos + ft_strlen(var_value) : dollar_pos;
 }
 
 char	*expand_variables(char *str, t_minishell *shell)
