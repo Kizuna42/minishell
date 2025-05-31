@@ -6,11 +6,34 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 19:52:12 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/31 23:21:46 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+static char	*handle_dollar_quote_lexer(char *input, int *i)
+{
+	char	quote_char;
+	int		start;
+	int		end;
+
+	quote_char = input[*i + 1];
+	start = *i + 2;
+	end = start;
+	while (input[end] && input[end] != quote_char)
+		end++;
+	if (input[end] == quote_char)
+	{
+		*i = end + 1;
+		return (ft_substr(input, start, end - start));
+	}
+	else
+	{
+		(*i)++;
+		return (ft_substr(input, *i - 1, 1));
+	}
+}
 
 static char	*extract_continuous_word(char *input, int *i)
 {
@@ -22,10 +45,7 @@ static char	*extract_continuous_word(char *input, int *i)
 	while (input[*i] && !is_whitespace(input[*i]) && !is_operator(input[*i]))
 	{
 		if (input[*i] == '$' && is_quote(input[*i + 1]))
-		{
-			(*i)++;
-			part = extract_quoted_string(input, i);
-		}
+			part = handle_dollar_quote_lexer(input, i);
 		else if (is_quote(input[*i]))
 			part = extract_quoted_string(input, i);
 		else
