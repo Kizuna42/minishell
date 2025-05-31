@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 19:01:25 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:31:30 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ int	execute_logical_ops(t_ast_node *node, t_minishell *shell)
 		if (left_result != 0)
 			return (execute_ast(node->right, shell));
 		return (left_result);
+	}
+	else if (node->type == NODE_SEMICOLON)
+	{
+		execute_ast(node->left, shell);
+		return (execute_ast(node->right, shell));
 	}
 	return (1);
 }

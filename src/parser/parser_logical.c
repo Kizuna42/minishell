@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 19:00:52 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:31:11 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@ static t_ast_node	*create_logical_node(t_ast_node *left, t_token **tokens)
 
 	if ((*tokens)->type == TOKEN_AND)
 		logical_node = create_ast_node(NODE_AND);
-	else
+	else if ((*tokens)->type == TOKEN_OR)
 		logical_node = create_ast_node(NODE_OR);
+	else
+		logical_node = create_ast_node(NODE_SEMICOLON);
 	if (!logical_node)
 	{
 		free_ast(left);
@@ -44,7 +46,8 @@ t_ast_node	*parse_logical_ops(t_token **tokens)
 	if (!left)
 		return (NULL);
 	if (*tokens && ((*tokens)->type == TOKEN_AND
-			|| (*tokens)->type == TOKEN_OR))
+			|| (*tokens)->type == TOKEN_OR
+			|| (*tokens)->type == TOKEN_SEMICOLON))
 		return (create_logical_node(left, tokens));
 	return (left);
 }

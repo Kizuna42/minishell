@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/25 21:25:23 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/05/30 19:30:49 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	is_operator(char c)
 {
 	return (c == '|' || c == '<' || c == '>' || c == '&'
-		|| c == '(' || c == ')');
+		|| c == '(' || c == ')' || c == ';');
 }
 
 int	is_quote(char c)
@@ -66,6 +66,8 @@ t_token_type	get_operator_type(char *str, int *advance)
 		return (TOKEN_LPAREN);
 	else if (str[0] == ')')
 		return (TOKEN_RPAREN);
+	else if (str[0] == ';')
+		return (TOKEN_SEMICOLON);
 	return (TOKEN_WORD);
 }
 
