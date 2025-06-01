@@ -1,9 +1,5 @@
 # 🐚 Minishell - Simple bash Shell Recreation
 
-## 📝 プロジェクト概要
-
-**Minishell**は、C 言語で作成された簡易 bash シェルの再実装プロジェクトです。42school のカリキュラムの一環として開発され、UNIX シェルの基本的な機能を理解し、プロセス管理、シグナル処理、ファイル操作などのシステムプログラミングの知識を深めることを目的としています。
-
 ### 🎯 実装範囲
 
 - **コマンド実行**: 外部コマンドの実行と PATH 解決
@@ -65,29 +61,6 @@ input
 ---
 
 ## ⚙️ セットアップ方法
-
-### 必要な依存関係
-
-- **GCC** または **Clang** コンパイラ
-- **GNU Readline** ライブラリ
-- **Make** ビルドツール
-
-macOS での依存関係インストール：
-
-```bash
-# Homebrewを使用
-brew install readline
-```
-
-Linux での依存関係インストール：
-
-```bash
-# Ubuntu/Debian
-sudo apt-get install libreadline-dev
-
-# CentOS/RHEL
-sudo yum install readline-devel
-```
 
 ### ビルド方法
 
@@ -285,99 +258,6 @@ if (pid == 0) {
 
 ---
 
-## 🐛 よくあるエラーと対処法
-
-### よくある問題
-
-1. **"command not found"エラー**
-
-   ```bash
-   # PATH環境変数を確認
-   echo $PATH
-   # 実行権限を確認
-   ls -la /bin/ls
-   ```
-
-2. **メモリリーク**
-
-   ```bash
-   # Valgrindでデバッグ
-   valgrind --leak-check=full --show-leak-kinds=all ./minishell
-   ```
-
-3. **シグナル処理の問題**
-   - Ctrl+C でプロンプトが新しい行に表示されない
-   - プロセスが適切に終了しない
-
-### デバッグの Tips
-
-```bash
-# GDBを使ったデバッグ
-gdb ./minishell
-(gdb) run
-(gdb) bt          # スタックトレース
-(gdb) print var   # 変数の値確認
-
-# strace/dtraceでシステムコール追跡
-strace -e trace=execve ./minishell
-
-# ログ出力の追加
-ft_putstr_fd("DEBUG: token type = ", STDERR_FILENO);
-ft_putnbr_fd(token->type, STDERR_FILENO);
-```
-
----
-
-## 📏 コード規約と Git 運用ルール
-
-### Norminette 準拠
-
-このプロジェクトは 42school のコーディング規約[Norminette](https://github.com/42School/norminette)に厳密に準拠しています：
-
-- 関数は 25 行以内
-- 1 行は 80 文字以内
-- 関数の引数は最大 4 個
-- 変数宣言は関数の先頭
-
-### Git 運用
-
-```bash
-# コミット前のチェック
-norminette src includes
-
-# 意味のあるコミットメッセージ
-git commit -m "Add: パイプライン実行機能"
-git commit -m "Fix: メモリリーク修正 in parser"
-git commit -m "Refactor: 環境変数管理の整理"
-```
-
----
-
-## 🤝 貢献方法
-
-### 開発の流れ
-
-1. **Issue 確認**: バグレポートや機能要望を確認
-2. **ブランチ作成**: `feature/新機能名` または `bugfix/問題名`
-3. **実装**: Norminette 準拠でコード作成
-4. **テスト**: 基本機能とメモリリークの確認
-5. **Pull Request**: 詳細な説明とテスト結果を添付
-
-### テストケース
-
-独自のテストスクリプトでの検証推奨：
-
-```bash
-#!/bin/bash
-# basic_test.sh
-echo "Testing basic commands..."
-echo "pwd" | ./minishell
-echo "echo hello world" | ./minishell
-echo "ls | head -5" | ./minishell
-```
-
----
-
 ## 📚 学習リソース
 
 このプロジェクトを理解するために推奨される学習リソース：
@@ -394,34 +274,4 @@ echo "ls | head -5" | ./minishell
 - **構文解析**: 再帰下降パーサー、AST 構築
 - **実行エンジン**: Tree-walking インタープリター
 
-### 参考書籍
-
-- "Advanced Programming in the UNIX Environment" - W. Richard Stevens
-- "The Linux Programming Interface" - Michael Kerrisk
-- "Crafting Interpreters" - Robert Nystrom
-
 ---
-
-## ⚖️ ライセンス
-
-このプロジェクトは 42school の学習目的で作成されており、教育利用に限定されます。商用利用は禁止されています。
-
----
-
-## 👥 作成者
-
-- **kizuna** - [@kizuna](https://github.com/kizuna) - 42 Tokyo
-
----
-
-## 🙏 謝辞
-
-- 42 Tokyo コミュニティ
-- GNU Readline ライブラリ開発者
-- bash プロジェクトからのインスピレーション
-
----
-
-**Happy Coding! 🚀**
-
-_"The best way to learn Unix is to implement it yourself."_
