@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 03:51:10 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/08 19:26:02 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,15 @@ static int	execute_external_command(char *path, char **args, char **envp)
 	pid = fork();
 	if (pid == 0)
 	{
+		setup_default_signal_handlers();
 		execve(path, args, envp);
 		perror_exit("execve");
 	}
 	else if (pid > 0)
 	{
+		setup_child_signal_handlers();
 		waitpid(pid, &status, 0);
+		setup_signal_handlers();
 		return (WEXITSTATUS(status));
 	}
 	return (1);

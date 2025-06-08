@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/24 18:41:10 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/08 19:26:02 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void	close_pipes(int pipefd[2])
 static int	execute_left_child(t_ast_node *node, t_minishell *shell,
 	int pipefd[2])
 {
+	setup_default_signal_handlers();
 	close(pipefd[0]);
 	dup2(pipefd[1], STDOUT_FILENO);
 	close(pipefd[1]);
@@ -42,6 +43,7 @@ static int	execute_left_child(t_ast_node *node, t_minishell *shell,
 static int	execute_right_child(t_ast_node *node, t_minishell *shell,
 	int pipefd[2])
 {
+	setup_default_signal_handlers();
 	close(pipefd[1]);
 	dup2(pipefd[0], STDIN_FILENO);
 	close(pipefd[0]);
@@ -64,7 +66,9 @@ int	execute_pipeline(t_ast_node *node, t_minishell *shell)
 	if (right_pid == 0)
 		execute_right_child(node, shell, pipefd);
 	close_pipes(pipefd);
+	setup_child_signal_handlers();
 	waitpid(left_pid, NULL, 0);
 	waitpid(right_pid, &status, 0);
+	setup_signal_handlers();
 	return (WEXITSTATUS(status));
 }

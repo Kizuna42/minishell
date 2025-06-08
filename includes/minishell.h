@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 04:07:57 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/08 19:34:36 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ typedef struct s_minishell
 	int			stdin_backup;
 	int			stdout_backup;
 }	t_minishell;
+
 t_token			*tokenize(char *input);
 t_token			*create_token(t_token_type type, char *value);
 t_token			*create_token_with_quote(t_token_type type, char *value,
@@ -164,6 +165,11 @@ char			**fill_wildcard_result(char **args, char **result);
 char			**split_args(char *input);
 void			handle_signals(void);
 void			setup_signal_handlers(void);
+void			setup_child_signal_handlers(void);
+void			setup_default_signal_handlers(void);
+int				rl_on_new_line(void);
+void			rl_redisplay(void);
+char			*read_input_line(void);
 void			cleanup_minishell(t_minishell *shell);
 int				is_whitespace(char c);
 int				is_valid_identifier(char *str);

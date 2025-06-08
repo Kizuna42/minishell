@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/06/01 04:11:18 by kizuna           ###   ########.fr        #
+#    Updated: 2025/06/08 19:29:20 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,6 +54,8 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/utils/env_utils.c \
 		$(SRCDIR)/utils/env_array.c \
 		$(SRCDIR)/utils/signal_utils.c \
+		$(SRCDIR)/utils/signal_child.c \
+		$(SRCDIR)/utils/input_utils.c \
 		$(SRCDIR)/utils/cleanup.c \
 		$(SRCDIR)/utils/expand.c \
 		$(SRCDIR)/utils/expand_vars.c \
