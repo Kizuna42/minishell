@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 20:17:32 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 20:32:54 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,21 @@
 char	*read_input_line(void)
 {
 	char	*input;
+	int		saved_signal_status;
 
 	if (isatty(STDIN_FILENO))
 	{
+		g_signal_status = 0;
 		input = readline(PROMPT);
-		if (g_signal_status == SIGINT)
+		saved_signal_status = g_signal_status;
+		g_signal_status = 0;
+		if (saved_signal_status == SIGINT)
 		{
 			if (input)
 				free(input);
 			return ((char *)-1);
 		}
-		if (!input)
-			return (NULL);
+		return (input);
 	}
 	else
 	{
