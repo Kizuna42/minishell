@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 20:11:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 20:18:49 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,13 @@ int	handle_input_loop(t_minishell *shell)
 	{
 		g_signal_status = 0;
 		input = read_input_line();
+		if (input == (char *)-1)
+		{
+			shell->last_exit_status = 130;
+			continue ;
+		}
 		if (!input)
 		{
-			if (g_signal_status == SIGINT)
-			{
-				shell->last_exit_status = 130;
-				continue ;
-			}
 			if (isatty(STDIN_FILENO))
 				ft_putstr_fd("exit\n", STDERR_FILENO);
 			break ;

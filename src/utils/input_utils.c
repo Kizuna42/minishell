@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 20:10:31 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 20:17:32 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,10 @@ char	*read_input_line(void)
 		{
 			if (input)
 				free(input);
-			return (NULL);
+			return ((char *)-1);
 		}
 		if (!input)
-		{
-			g_signal_status = 0;
 			return (NULL);
-		}
 	}
 	else
 	{
