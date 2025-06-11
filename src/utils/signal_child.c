@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 21:16:16 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 21:50:30 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,14 @@ void	setup_child_signal_handlers(void)
 
 void	setup_default_signal_handlers(void)
 {
+	struct termios	term;
+
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
+	if (isatty(STDIN_FILENO) && tcgetattr(STDIN_FILENO, &term) == 0)
+	{
+		term.c_cc[VQUIT] = '\x1C';
+		term.c_lflag |= ISIG;
+		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	}
 }
