@@ -6,27 +6,11 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 17:26:39 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 18:01:15 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-void	restore_std_fds(t_minishell *shell)
-{
-	dup2(shell->stdin_backup, STDIN_FILENO);
-	dup2(shell->stdout_backup, STDOUT_FILENO);
-}
-
-int	handle_readline_input(t_minishell *shell, char *input)
-{
-	if (!input)
-		return (1);
-	process_input(input, shell);
-	restore_std_fds(shell);
-	free(input);
-	return (0);
-}
 
 int	is_whitespace(char c)
 {
