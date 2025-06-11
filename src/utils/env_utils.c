@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 04:01:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 19:08:31 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,16 @@
 static t_env	*add_oldpwd_env(t_env *env_list)
 {
 	t_env	*new_env;
+	t_env	*current;
 
+	current = env_list;
+	while (current)
+	{
+		if (ft_strncmp(current->key, "OLDPWD", 6) == 0
+			&& ft_strlen(current->key) == 6)
+			return (env_list);
+		current = current->next;
+	}
 	new_env = malloc(sizeof(t_env));
 	if (new_env)
 	{
