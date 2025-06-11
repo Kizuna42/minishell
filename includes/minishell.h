@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 18:39:13 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 21:06:01 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,6 +228,7 @@ int				should_match_entry(char *pattern, char *entry_name);
 int				count_matches(char *pattern);
 char			**fill_matches(char *pattern, int count);
 void			restore_fds(int saved_stdin, int saved_stdout);
+void			reset_readline_state(void);
 
 # ifdef BONUS
 

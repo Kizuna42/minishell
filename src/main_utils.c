@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 20:57:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 21:06:13 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,9 @@ int	handle_input_loop(t_minishell *shell)
 	while (1)
 	{
 		input = read_input_line();
-		if (input == (char *)-1 || input == (char *)-2)
+		if (input == (char *)-1)
 		{
-			if (input == (char *)-1)
-				shell->last_exit_status = 130;
-			else
-				shell->last_exit_status = 131;
+			reset_readline_state();
 			continue ;
 		}
 		if (!input)
