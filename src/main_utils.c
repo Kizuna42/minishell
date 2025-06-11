@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 17:28:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 20:11:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ int	handle_input_loop(t_minishell *shell)
 				shell->last_exit_status = 130;
 				continue ;
 			}
+			if (isatty(STDIN_FILENO))
+				ft_putstr_fd("exit\n", STDERR_FILENO);
 			break ;
 		}
 		should_exit = handle_readline_input(shell, input);
