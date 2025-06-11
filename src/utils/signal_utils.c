@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 21:16:15 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 21:36:27 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ static void	handle_sigquit(int sig)
 {
 	(void)sig;
 	g_signal_status = SIGQUIT;
-	write(STDERR_FILENO, "Quit: 3\n", 8);
 }
 
 static void	disable_quit_char(void)
@@ -54,11 +53,11 @@ void	setup_signal_handlers(void)
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGQUIT);
 	sa.sa_handler = handle_sigint;
-	sa.sa_flags = SA_RESTART;
+	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 	sigemptyset(&sa.sa_mask);
 	sa.sa_handler = handle_sigquit;
-	sa.sa_flags = SA_RESTART;
+	sa.sa_flags = 0;
 	sigaction(SIGQUIT, &sa, NULL);
 	disable_quit_char();
 }

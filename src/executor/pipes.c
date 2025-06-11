@@ -6,29 +6,11 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 21:18:42 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 21:40:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-int	setup_pipes(int pipefd[2])
-{
-	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return (1);
-	}
-	return (0);
-}
-
-void	close_pipes(int pipefd[2])
-{
-	if (pipefd[0] >= 0)
-		close(pipefd[0]);
-	if (pipefd[1] >= 0)
-		close(pipefd[1]);
-}
 
 static int	execute_left_child(t_ast_node *node, t_minishell *shell,
 	int pipefd[2])
@@ -50,14 +32,31 @@ static int	execute_right_child(t_ast_node *node, t_minishell *shell,
 	exit(execute_ast(node->right, shell));
 }
 
+static int	wait_and_handle_signals(pid_t left_pid, pid_t right_pid)
+{
+	int	status;
+
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	waitpid(left_pid, NULL, 0);
+	waitpid(right_pid, &status, 0);
+	setup_signal_handlers();
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+		write(STDERR_FILENO, "\n", 1);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
+		write(STDERR_FILENO, "Quit (core dumped)\n", 19);
+	if (WIFSIGNALED(status))
+		return (128 + WTERMSIG(status));
+	return (WEXITSTATUS(status));
+}
+
 int	execute_pipeline(t_ast_node *node, t_minishell *shell)
 {
 	int		pipefd[2];
 	pid_t	left_pid;
 	pid_t	right_pid;
-	int		status;
 
-	if (setup_pipes(pipefd) != 0)
+	if (pipe(pipefd) == -1)
 		return (1);
 	left_pid = fork();
 	if (left_pid == 0)
@@ -65,19 +64,7 @@ int	execute_pipeline(t_ast_node *node, t_minishell *shell)
 	right_pid = fork();
 	if (right_pid == 0)
 		execute_right_child(node, shell, pipefd);
-	close_pipes(pipefd);
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-	waitpid(left_pid, NULL, 0);
-	waitpid(right_pid, &status, 0);
-	setup_signal_handlers();
-	if (WIFSIGNALED(status))
-	{
-		if (WTERMSIG(status) == SIGINT)
-			write(STDERR_FILENO, "\n", 1);
-		else if (WTERMSIG(status) == SIGQUIT)
-			write(STDERR_FILENO, "Quit (core dumped)\n", 19);
-		return (128 + WTERMSIG(status));
-	}
-	return (WEXITSTATUS(status));
+	close(pipefd[0]);
+	close(pipefd[1]);
+	return (wait_and_handle_signals(left_pid, right_pid));
 }
