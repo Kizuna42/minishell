@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 16:50:22 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 21:18:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,13 @@ int	execute_pipeline(t_ast_node *node, t_minishell *shell)
 	waitpid(left_pid, NULL, 0);
 	waitpid(right_pid, &status, 0);
 	setup_signal_handlers();
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
-		write(STDERR_FILENO, "Quit (core dumped)\n", 19);
 	if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGINT)
+			write(STDERR_FILENO, "\n", 1);
+		else if (WTERMSIG(status) == SIGQUIT)
+			write(STDERR_FILENO, "Quit (core dumped)\n", 19);
 		return (128 + WTERMSIG(status));
+	}
 	return (WEXITSTATUS(status));
 }
