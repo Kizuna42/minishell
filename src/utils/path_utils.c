@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 03:16:23 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 22:28:09 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,27 @@ int	check_file_access(char *command)
 	return (0);
 }
 
-static char	*check_absolute_path(char *command)
+static char	*check_path_with_slash(char *command)
 {
 	struct stat	st;
+	char		*resolved_path;
+	char		*result;
 
 	if (access(command, F_OK) == 0)
 	{
 		if (stat(command, &st) == 0 && S_ISDIR(st.st_mode))
 			return (NULL);
 		if (access(command, X_OK) == 0)
+		{
+			resolved_path = realpath(command, NULL);
+			if (resolved_path)
+			{
+				result = ft_strdup(resolved_path);
+				free(resolved_path);
+				return (result);
+			}
 			return (ft_strdup(command));
+		}
 	}
 	return (NULL);
 }
@@ -77,7 +88,7 @@ char	*find_command_path(char *command, t_minishell *shell)
 	int			i;
 
 	if (ft_strchr(command, '/'))
-		return (check_absolute_path(command));
+		return (check_path_with_slash(command));
 	path_env = get_env_value("PATH", shell);
 	if (!path_env || !*path_env)
 		return (NULL);
