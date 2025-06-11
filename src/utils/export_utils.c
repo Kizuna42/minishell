@@ -6,29 +6,11 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 02:51:31 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 18:31:16 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-int	is_valid_identifier(char *str)
-{
-	int	i;
-
-	if (!str || !*str)
-		return (0);
-	if (!ft_isalpha(str[0]) && str[0] != '_')
-		return (0);
-	i = 1;
-	while (str[i])
-	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
-			return (0);
-		i++;
-	}
-	return (1);
-}
 
 static void	parse_export_arg(char *arg, char **key, char **value)
 {
@@ -47,6 +29,20 @@ static void	parse_export_arg(char *arg, char **key, char **value)
 	}
 }
 
+static int	handle_invalid_option(char *arg, char *key, char *value)
+{
+	ft_putstr_fd("minishell: export: ", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putstr_fd(": invalid option\n", STDERR_FILENO);
+	ft_putstr_fd("export: usage: export [-nf] [name[=value] ...]",
+		STDERR_FILENO);
+	ft_putstr_fd(" or export -p\n", STDERR_FILENO);
+	free(key);
+	if (value)
+		free(value);
+	return (2);
+}
+
 static int	handle_invalid_identifier(char *arg, char *key, char *value)
 {
 	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
@@ -58,12 +54,25 @@ static int	handle_invalid_identifier(char *arg, char *key, char *value)
 	return (1);
 }
 
+static int	check_invalid_option(char *key, char *arg, char *value)
+{
+	if (key && key[0] == '-' && key[1] == '-')
+		return (handle_invalid_option(arg, key, value));
+	if (key && key[0] == '-' && key[1] && key[1] != '=')
+		return (handle_invalid_option(arg, key, value));
+	return (0);
+}
+
 int	process_export_arg(char *arg, t_minishell *shell)
 {
 	char	*key;
 	char	*value;
+	int		option_result;
 
 	parse_export_arg(arg, &key, &value);
+	option_result = check_invalid_option(key, arg, value);
+	if (option_result)
+		return (option_result);
 	if (!is_valid_identifier(key))
 		return (handle_invalid_identifier(arg, key, value));
 	if (value)
@@ -71,32 +80,5 @@ int	process_export_arg(char *arg, t_minishell *shell)
 	free(key);
 	if (value)
 		free(value);
-	return (0);
-}
-
-int	print_export_env(t_minishell *shell)
-{
-	t_env	**env_array;
-	int		count;
-	int		i;
-
-	env_array = create_sorted_env_array(shell, &count);
-	if (!env_array)
-		return (1);
-	i = 0;
-	while (i < count)
-	{
-		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		ft_putstr_fd(env_array[i]->key, STDOUT_FILENO);
-		if (env_array[i]->value)
-		{
-			ft_putstr_fd("=\"", STDOUT_FILENO);
-			ft_putstr_fd(env_array[i]->value, STDOUT_FILENO);
-			ft_putstr_fd("\"", STDOUT_FILENO);
-		}
-		ft_putstr_fd("\n", STDOUT_FILENO);
-		i++;
-	}
-	free(env_array);
 	return (0);
 }
