@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/08 19:47:40 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 16:50:22 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,14 @@ static int	execute_external_command(char *path, char **args, char **envp)
 	}
 	else if (pid > 0)
 	{
-		setup_parent_signal_handlers();
+		signal(SIGINT, SIG_IGN);
+		signal(SIGQUIT, SIG_IGN);
 		waitpid(pid, &status, 0);
 		setup_signal_handlers();
+		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
+			write(STDERR_FILENO, "Quit (core dumped)\n", 19);
+		if (WIFSIGNALED(status))
+			return (128 + WTERMSIG(status));
 		return (WEXITSTATUS(status));
 	}
 	return (1);
