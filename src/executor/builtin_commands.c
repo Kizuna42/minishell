@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 17:55:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 21:58:17 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,10 @@ int	builtin_env(char **args, t_minishell *shell)
 
 	if (args[1])
 	{
-		return (1);
+		ft_putstr_fd("env: ", STDERR_FILENO);
+		ft_putstr_fd(args[1], STDERR_FILENO);
+		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+		return (127);
 	}
 	current = shell->env_list;
 	while (current)
