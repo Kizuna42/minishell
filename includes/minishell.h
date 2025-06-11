@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 18:39:13 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 22:21:33 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ int				is_builtin(char *command);
 int				execute_builtin(char **args, t_minishell *shell);
 int				builtin_echo(char **args);
 int				builtin_cd(char **args, t_minishell *shell);
-int				builtin_pwd(void);
+int				builtin_pwd(char **args);
 int				builtin_export(char **args, t_minishell *shell);
 int				builtin_unset(char **args, t_minishell *shell);
 int				builtin_env(char **args, t_minishell *shell);
@@ -200,8 +200,6 @@ t_ast_node		*collect_redirections(t_ast_node *node, t_ast_node **redirects,
 					int *count);
 int				read_heredoc_lines(int pipefd[2], char *delimiter,
 					t_minishell *shell);
-int				setup_pipes(int pipefd[2]);
-void			close_pipes(int pipefd[2]);
 void			print_error(char *cmd, char *msg);
 void			perror_exit(char *msg);
 int				handle_directory_error(char *command);
@@ -228,6 +226,7 @@ int				should_match_entry(char *pattern, char *entry_name);
 int				count_matches(char *pattern);
 char			**fill_matches(char *pattern, int count);
 void			restore_fds(int saved_stdin, int saved_stdout);
+void			reset_readline_state(void);
 
 # ifdef BONUS
 

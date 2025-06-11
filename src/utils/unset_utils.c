@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:38:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 18:38:21 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 19:18:41 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,4 @@ int	process_unset_arg(char *arg, t_minishell *shell)
 		unset_env_value(arg, shell);
 		return (0);
 	}
-} 
+}

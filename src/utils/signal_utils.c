@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 17:55:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 22:29:19 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ static void	handle_sigint(int sig)
 	(void)sig;
 	g_signal_status = SIGINT;
 	write(STDERR_FILENO, "\n", 1);
+	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
 }
@@ -27,7 +28,7 @@ static void	handle_sigint(int sig)
 static void	handle_sigquit(int sig)
 {
 	(void)sig;
-	return ;
+	g_signal_status = SIGQUIT;
 }
 
 static void	disable_quit_char(void)
@@ -52,11 +53,17 @@ void	setup_signal_handlers(void)
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGQUIT);
 	sa.sa_handler = handle_sigint;
-	sa.sa_flags = SA_RESTART;
+	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 	sigemptyset(&sa.sa_mask);
 	sa.sa_handler = handle_sigquit;
-	sa.sa_flags = SA_RESTART;
+	sa.sa_flags = 0;
 	sigaction(SIGQUIT, &sa, NULL);
 	disable_quit_char();
+}
+
+void	reset_readline_state(void)
+{
+	rl_replace_line("", 0);
+	rl_on_new_line();
 }
