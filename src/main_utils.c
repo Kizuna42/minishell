@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/08 19:29:19 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 17:28:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,14 @@ int	handle_input_loop(t_minishell *shell)
 	{
 		g_signal_status = 0;
 		input = read_input_line();
-		if (g_signal_status == SIGINT)
+		if (!input)
 		{
-			shell->last_exit_status = 130;
-			g_signal_status = 0;
-			continue ;
+			if (g_signal_status == SIGINT)
+			{
+				shell->last_exit_status = 130;
+				continue ;
+			}
+			break ;
 		}
 		should_exit = handle_readline_input(shell, input);
 		if (should_exit)
