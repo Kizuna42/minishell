@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 22:17:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 22:21:33 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,15 @@ int	builtin_echo(char **args)
 	return (0);
 }
 
-int	builtin_pwd(void)
+int	builtin_pwd(char **args)
 {
 	char	*cwd;
 
+	if (args[1])
+	{
+		print_error("pwd", "too many arguments");
+		return (1);
+	}
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
 	{

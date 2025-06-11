@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 21:42:18 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 22:21:33 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ int				is_builtin(char *command);
 int				execute_builtin(char **args, t_minishell *shell);
 int				builtin_echo(char **args);
 int				builtin_cd(char **args, t_minishell *shell);
-int				builtin_pwd(void);
+int				builtin_pwd(char **args);
 int				builtin_export(char **args, t_minishell *shell);
 int				builtin_unset(char **args, t_minishell *shell);
 int				builtin_env(char **args, t_minishell *shell);

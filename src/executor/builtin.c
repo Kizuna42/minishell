@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/05/31 22:48:54 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 22:21:28 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	execute_builtin(char **args, t_minishell *shell)
 	else if (ft_strncmp(args[0], "cd", 2) == 0 && ft_strlen(args[0]) == 2)
 		return (builtin_cd(args, shell));
 	else if (ft_strncmp(args[0], "pwd", 3) == 0 && ft_strlen(args[0]) == 3)
-		return (builtin_pwd());
+		return (builtin_pwd(args));
 	else if (ft_strncmp(args[0], "export", 6) == 0 && ft_strlen(args[0]) == 6)
 		return (builtin_export(args, shell));
 	else if (ft_strncmp(args[0], "unset", 5) == 0 && ft_strlen(args[0]) == 5)
