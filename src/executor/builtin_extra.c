@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 18:31:59 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 18:40:47 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	builtin_unset(char **args, t_minishell *shell)
 {
 	int	i;
 	int	exit_status;
+	int	current_status;
 
 	if (!args[1])
 		return (0);
@@ -24,17 +25,9 @@ int	builtin_unset(char **args, t_minishell *shell)
 	exit_status = 0;
 	while (args[i])
 	{
-		if (!is_valid_identifier(args[i]))
-		{
-			ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
-			ft_putstr_fd(args[i], STDERR_FILENO);
-			ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-			exit_status = 1;
-		}
-		else
-		{
-			unset_env_value(args[i], shell);
-		}
+		current_status = process_unset_arg(args[i], shell);
+		if (current_status > exit_status)
+			exit_status = current_status;
 		i++;
 	}
 	return (exit_status);

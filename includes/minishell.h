@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 17:12:36 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 18:39:13 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,7 @@ int				handle_directory_error(char *command);
 int				handle_permission_error(char *command);
 int				handle_cd_error(char *path);
 int				handle_cd_dash(t_minishell *shell);
+int				process_unset_arg(char *arg, t_minishell *shell);
 int				is_valid_n_flag(char *arg);
 int				handle_invalid_var(char **result, char *var_name,
 					int dollar_pos, int *i);
