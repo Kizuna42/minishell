@@ -6,37 +6,43 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 20:32:54 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 20:37:56 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*read_input_line(void)
+static char	*read_interactive_input(void)
 {
 	char	*input;
-	int		saved_signal_status;
+	int		was_interrupted;
 
-	if (isatty(STDIN_FILENO))
+	while (1)
 	{
 		g_signal_status = 0;
 		input = readline(PROMPT);
-		saved_signal_status = g_signal_status;
+		was_interrupted = (g_signal_status == SIGINT);
 		g_signal_status = 0;
-		if (saved_signal_status == SIGINT)
+		if (was_interrupted && input)
 		{
-			if (input)
-				free(input);
-			return ((char *)-1);
+			free(input);
+			continue ;
 		}
+		if (was_interrupted && !input)
+			continue ;
 		return (input);
 	}
-	else
-	{
-		input = get_next_line(STDIN_FILENO);
-		if (input && input[ft_strlen(input) - 1] == '\n')
-			input[ft_strlen(input) - 1] = '\0';
-	}
+}
+
+char	*read_input_line(void)
+{
+	char	*input;
+
+	if (isatty(STDIN_FILENO))
+		return (read_interactive_input());
+	input = get_next_line(STDIN_FILENO);
+	if (input && input[ft_strlen(input) - 1] == '\n')
+		input[ft_strlen(input) - 1] = '\0';
 	return (input);
 }
 
