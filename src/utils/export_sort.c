@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 02:47:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 02:48:31 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 18:29:53 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,31 @@ t_env	**create_sorted_env_array(t_minishell *shell, int *count)
 	}
 	qsort(env_array, *count, sizeof(t_env *), compare_env_keys);
 	return (env_array);
+}
+
+int	print_export_env(t_minishell *shell)
+{
+	t_env	**env_array;
+	int		count;
+	int		i;
+
+	env_array = create_sorted_env_array(shell, &count);
+	if (!env_array)
+		return (1);
+	i = 0;
+	while (i < count)
+	{
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putstr_fd(env_array[i]->key, STDOUT_FILENO);
+		if (env_array[i]->value)
+		{
+			ft_putstr_fd("=\"", STDOUT_FILENO);
+			ft_putstr_fd(env_array[i]->value, STDOUT_FILENO);
+			ft_putstr_fd("\"", STDOUT_FILENO);
+		}
+		ft_putstr_fd("\n", STDOUT_FILENO);
+		i++;
+	}
+	free(env_array);
+	return (0);
 }
