@@ -6,27 +6,49 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 20:48:33 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/11 20:56:04 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
+static char	*handle_signal_input(char *input)
+{
+	if (g_signal_status == SIGINT)
+	{
+		g_signal_status = 0;
+		if (input)
+		{
+			free(input);
+			input = NULL;
+		}
+		return ((char *)-1);
+	}
+	if (g_signal_status == SIGQUIT)
+	{
+		g_signal_status = 0;
+		if (input)
+		{
+			free(input);
+			input = NULL;
+		}
+		return ((char *)-2);
+	}
+	return (input);
+}
+
 static char	*read_interactive_input(void)
 {
 	char	*input;
+	char	*result;
 
 	while (1)
 	{
 		g_signal_status = 0;
 		input = readline(PROMPT);
-		if (g_signal_status == SIGINT)
-		{
-			g_signal_status = 0;
-			if (input)
-				free(input);
-			return ((char *)-1);
-		}
+		result = handle_signal_input(input);
+		if (result != input)
+			return (result);
 		return (input);
 	}
 }
