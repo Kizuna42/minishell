@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 20:40:57 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 20:51:16 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,34 +20,28 @@ static void	handle_sigint(int sig)
 	(void)sig;
 	g_signal_status = SIGINT;
 	write(STDERR_FILENO, "\n", 1);
-	rl_replace_line("", 0);
 	rl_on_new_line();
+	rl_replace_line("", 0);
 	rl_redisplay();
-}
-
-static void	handle_sigquit(int sig)
-{
-	(void)sig;
-	g_signal_status = SIGQUIT;
 }
 
 void	setup_signal_handlers(void)
 {
-	struct sigaction	sa;
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
 
-	sigemptyset(&sa.sa_mask);
-	sigaddset(&sa.sa_mask, SIGQUIT);
-	sa.sa_handler = handle_sigint;
-	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, NULL);
-	sigemptyset(&sa.sa_mask);
-	sa.sa_handler = handle_sigquit;
-	sa.sa_flags = 0;
-	sigaction(SIGQUIT, &sa, NULL);
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_handler = handle_sigint;
+	sa_int.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa_int, NULL);
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_handler = SIG_IGN;
+	sa_quit.sa_flags = SA_RESTART;
+	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
 void	reset_readline_state(void)
 {
-	rl_replace_line("", 0);
 	rl_on_new_line();
+	rl_replace_line("", 0);
 }
