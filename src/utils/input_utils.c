@@ -6,37 +6,37 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 20:39:19 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 20:51:16 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static char	*handle_signal_input(char *input)
+static int	handle_signal_in_readline(char **input)
 {
-	if (input)
+	if (g_signal_status == SIGINT || g_signal_status == SIGQUIT)
 	{
-		free(input);
-		input = NULL;
+		if (*input)
+		{
+			free(*input);
+			*input = NULL;
+		}
+		return (1);
 	}
-	return ((char *)-1);
+	return (0);
 }
 
 static char	*read_interactive_input(void)
 {
 	char	*input;
 
-	g_signal_status = 0;
-	input = readline(PROMPT);
-	if (g_signal_status == SIGINT)
+	while (1)
 	{
 		g_signal_status = 0;
-		return (handle_signal_input(input));
-	}
-	if (g_signal_status == SIGQUIT)
-	{
-		g_signal_status = 0;
-		return (handle_signal_input(input));
+		input = readline(PROMPT);
+		if (handle_signal_in_readline(&input))
+			continue ;
+		break ;
 	}
 	if (!input)
 		return (NULL);
