@@ -6,25 +6,11 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 20:51:16 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 21:08:19 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-static int	handle_signal_in_readline(char **input)
-{
-	if (g_signal_status == SIGINT || g_signal_status == SIGQUIT)
-	{
-		if (*input)
-		{
-			free(*input);
-			*input = NULL;
-		}
-		return (1);
-	}
-	return (0);
-}
 
 static char	*read_interactive_input(void)
 {
@@ -34,12 +20,19 @@ static char	*read_interactive_input(void)
 	{
 		g_signal_status = 0;
 		input = readline(PROMPT);
-		if (handle_signal_in_readline(&input))
-			continue ;
+		if (g_signal_status == SIGINT)
+		{
+			if (input)
+			{
+				free(input);
+				input = NULL;
+			}
+			return (ft_strdup(""));
+		}
+		if (!input)
+			return (NULL);
 		break ;
 	}
-	if (!input)
-		return (NULL);
 	if (*input == '\0')
 	{
 		free(input);
