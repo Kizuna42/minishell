@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 22:24:16 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 22:27:10 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,5 @@ int	handle_readline_input(t_minishell *shell, char *input)
 		return (1);
 	process_input(input, shell);
 	restore_std_fds(shell);
-	free(input);
 	return (0);
 }

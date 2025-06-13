@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 21:57:41 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 22:27:22 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,15 @@ void	process_input(char *input, t_minishell *shell)
 	int			syntax_error;
 
 	if (!input || !*input)
+	{
+		if (input)
+			free(input);
 		return ;
+	}
 	if (isatty(STDIN_FILENO))
 		add_history(input);
 	tokens = tokenize(input);
+	free(input);
 	if (!tokens)
 		return ;
 	syntax_error = validate_and_parse(tokens, &ast);
