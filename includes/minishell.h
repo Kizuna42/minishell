@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 23:25:00 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/14 02:22:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,6 @@ void			handle_signals(void);
 void			setup_signal_handlers(void);
 void			setup_child_signal_handlers(void);
 void			setup_default_signal_handlers(void);
-int				check_and_handle_signals(void);
 int				rl_on_new_line(void);
 void			rl_redisplay(void);
 char			*read_input_line(void);

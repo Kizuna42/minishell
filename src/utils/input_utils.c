@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 23:25:10 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/14 02:23:01 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,21 @@ static char	*read_interactive_input(void)
 
 	while (1)
 	{
-		if (check_and_handle_signals())
-			continue ;
+		g_signal_status = 0;
 		input = readline(PROMPT);
+		if (g_signal_status == SIGINT)
+			rl_on_new_line();
 		if (!input)
 		{
 			if (g_signal_status == SIGINT)
-			{
-				g_signal_status = 0;
 				continue ;
-			}
 			return (NULL);
 		}
 		if (*input)
+		{
+			add_history(input);
 			return (input);
+		}
 		free(input);
 	}
 }
