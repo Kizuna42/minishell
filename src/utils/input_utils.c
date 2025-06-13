@@ -6,11 +6,27 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 22:55:55 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 23:04:16 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+static int	handle_signal_interruption(char **input)
+{
+	if (g_signal_status == SIGINT)
+	{
+		if (*input)
+		{
+			free(*input);
+			*input = NULL;
+		}
+		rl_on_new_line();
+		rl_redisplay();
+		return (1);
+	}
+	return (0);
+}
 
 static char	*read_interactive_input(void)
 {
@@ -18,18 +34,10 @@ static char	*read_interactive_input(void)
 
 	while (1)
 	{
-		check_and_handle_signals();
+		g_signal_status = 0;
 		input = readline(PROMPT);
-		if (g_signal_status == SIGINT)
-		{
-			g_signal_status = 0;
-			if (input)
-			{
-				free(input);
-				input = NULL;
-			}
+		if (handle_signal_interruption(&input))
 			continue ;
-		}
 		if (!input)
 			return (NULL);
 		if (*input == '\0')
