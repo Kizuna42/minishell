@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 22:33:51 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 22:52:58 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@
 static void	handle_signal_interrupt(int sig)
 {
 	(void)sig;
-	write(STDERR_FILENO, "\n", 1);
 	g_signal_status = SIGINT;
+	write(STDERR_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_redisplay();
 }
 
 void	setup_signal_handlers(void)
@@ -37,8 +39,12 @@ void	setup_signal_handlers(void)
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
-void	reset_readline_state(void)
+void	check_and_handle_signals(void)
 {
-	rl_on_new_line();
-	rl_redisplay();
+	if (g_signal_status == SIGINT)
+	{
+		g_signal_status = 0;
+		rl_on_new_line();
+		rl_redisplay();
+	}
 }
