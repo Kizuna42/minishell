@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 21:08:12 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 21:19:29 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ static void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
+static void	handle_sigquit(int sig)
+{
+	(void)sig;
+}
+
 void	setup_signal_handlers(void)
 {
 	struct sigaction	sa_int;
@@ -35,7 +40,7 @@ void	setup_signal_handlers(void)
 	sa_int.sa_flags = 0;
 	sigaction(SIGINT, &sa_int, NULL);
 	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_handler = SIG_IGN;
+	sa_quit.sa_handler = handle_sigquit;
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
@@ -43,4 +48,6 @@ void	setup_signal_handlers(void)
 void	reset_readline_state(void)
 {
 	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
