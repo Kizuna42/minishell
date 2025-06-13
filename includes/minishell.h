@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 18:15:44 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 22:54:20 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,9 +167,9 @@ void			handle_signals(void);
 void			setup_signal_handlers(void);
 void			setup_child_signal_handlers(void);
 void			setup_default_signal_handlers(void);
+void			check_and_handle_signals(void);
 int				rl_on_new_line(void);
 void			rl_redisplay(void);
-void			rl_replace_line(const char *text, int clear_undo);
 char			*read_input_line(void);
 void			cleanup_minishell(t_minishell *shell);
 int				is_whitespace(char c);
@@ -226,7 +226,6 @@ int				should_match_entry(char *pattern, char *entry_name);
 int				count_matches(char *pattern);
 char			**fill_matches(char *pattern, int count);
 void			restore_fds(int saved_stdin, int saved_stdout);
-void			reset_readline_state(void);
 
 # ifdef BONUS
 
