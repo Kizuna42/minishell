@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 21:19:29 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 21:30:30 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,6 @@ static void	handle_sigint(int sig)
 	(void)sig;
 	g_signal_status = SIGINT;
 	write(STDERR_FILENO, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
 }
 
 static void	handle_sigquit(int sig)

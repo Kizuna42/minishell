@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 21:19:29 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 21:30:30 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,6 @@ static void	handle_signal_interrupt(char **input)
 		free(*input);
 		*input = NULL;
 	}
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
 }
 
 static char	*read_interactive_input(void)
@@ -35,6 +32,8 @@ static char	*read_interactive_input(void)
 		if (g_signal_status == SIGINT)
 		{
 			handle_signal_interrupt(&input);
+			rl_on_new_line();
+			rl_replace_line("", 0);
 			continue ;
 		}
 		if (!input)

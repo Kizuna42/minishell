@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 20:51:16 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/13 21:30:30 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	init_minishell(t_minishell *shell, char **envp)
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);
 }
+
+
 
 int	handle_input_loop(t_minishell *shell)
 {
