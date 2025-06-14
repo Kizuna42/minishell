@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:09:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:33:03 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,7 @@ static int	execute_left_child(t_ast_node *node, t_minishell *shell,
 	close(pipefd[0]);
 	dup2(pipefd[1], STDOUT_FILENO);
 	close(pipefd[1]);
-	if (shell->stdin_backup >= 0)
-		close(shell->stdin_backup);
-	if (shell->stdout_backup >= 0)
-		close(shell->stdout_backup);
+	cleanup_child_fds(shell);
 	exit(execute_ast(node->left, shell));
 }
 
@@ -33,10 +30,7 @@ static int	execute_right_child(t_ast_node *node, t_minishell *shell,
 	close(pipefd[1]);
 	dup2(pipefd[0], STDIN_FILENO);
 	close(pipefd[0]);
-	if (shell->stdin_backup >= 0)
-		close(shell->stdin_backup);
-	if (shell->stdout_backup >= 0)
-		close(shell->stdout_backup);
+	cleanup_child_fds(shell);
 	exit(execute_ast(node->right, shell));
 }
 

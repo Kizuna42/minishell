@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 22:28:01 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:33:31 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ void	init_minishell(t_minishell *shell, char **envp)
 	shell->envp = env_to_array(shell);
 	shell->last_exit_status = 0;
 	shell->stdin_backup = dup(STDIN_FILENO);
+	if (shell->stdin_backup == -1)
+		shell->stdin_backup = -1;
 	shell->stdout_backup = dup(STDOUT_FILENO);
+	if (shell->stdout_backup == -1)
+		shell->stdout_backup = -1;
 }
 
 int	handle_input_loop(t_minishell *shell)
