@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/11 18:31:16 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:10:19 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,7 @@ int	process_export_arg(char *arg, t_minishell *shell)
 		return (option_result);
 	if (!is_valid_identifier(key))
 		return (handle_invalid_identifier(arg, key, value));
-	if (value)
-		set_env_value(key, value, shell);
+	set_env_value(key, value, shell);
 	free(key);
 	if (value)
 		free(value);

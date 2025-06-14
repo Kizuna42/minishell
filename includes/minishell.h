@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/14 02:26:08 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:12:49 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ int				execute_command(t_ast_node *node, t_minishell *shell);
 int				execute_pipeline(t_ast_node *node, t_minishell *shell);
 int				execute_redirections(t_ast_node *node, t_minishell *shell);
 int				execute_logical_ops(t_ast_node *node, t_minishell *shell);
+int				execute_subshell(t_ast_node *node, t_minishell *shell);
 char			*find_command_path(char *command, t_minishell *shell);
 int				check_file_access(char *command);
 int				is_builtin(char *command);
@@ -226,6 +227,8 @@ int				should_match_entry(char *pattern, char *entry_name);
 int				count_matches(char *pattern);
 char			**fill_matches(char *pattern, int count);
 void			restore_fds(int saved_stdin, int saved_stdout);
+void			cleanup_child_fds(t_minishell *shell);
+int				handle_subshell_signals(pid_t pid);
 
 # ifdef BONUS
 

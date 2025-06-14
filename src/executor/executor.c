@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/13 21:58:20 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:09:45 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	execute_ast(t_ast_node *ast, t_minishell *shell)
 	else if (ast->type == NODE_AND || ast->type == NODE_OR
 		|| ast->type == NODE_SEMICOLON || ast->type == NODE_BACKGROUND)
 		return (execute_logical_ops(ast, shell));
+	else if (ast->type == NODE_SUBSHELL)
+		return (execute_subshell(ast, shell));
 	return (0);
 }
 

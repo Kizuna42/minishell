@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 04:07:57 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:09:46 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,13 @@ int	execute_redirect_list(t_ast_node **redirects, int count, t_minishell *shell)
 	int	i;
 	int	result;
 
-	i = count - 1;
-	while (i >= 0)
+	i = 0;
+	while (i < count)
 	{
 		result = execute_single_redirect(redirects[i], shell);
 		if (result != 0)
 			return (result);
-		i--;
+		i++;
 	}
 	return (0);
 }

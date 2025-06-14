@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/06/11 21:33:00 by kizuna           ###   ########.fr        #
+#    Updated: 2025/06/15 04:12:10 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/executor/redirect_utils.c \
 		$(SRCDIR)/executor/heredoc_utils.c \
 		$(SRCDIR)/executor/pipes.c \
+		$(SRCDIR)/executor/subshell.c \
 		$(SRCDIR)/utils/utils.c \
 		$(SRCDIR)/utils/env_utils.c \
 		$(SRCDIR)/utils/env_array.c \

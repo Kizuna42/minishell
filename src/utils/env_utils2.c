@@ -6,11 +6,26 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 04:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 04:01:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:09:46 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+static t_env	*create_env_node(char *key, char *value)
+{
+	t_env	*new_env;
+
+	new_env = malloc(sizeof(t_env));
+	if (!new_env)
+		return (NULL);
+	new_env->key = ft_strdup(key);
+	if (value)
+		new_env->value = ft_strdup(value);
+	else
+		new_env->value = NULL;
+	return (new_env);
+}
 
 int	set_env_value(char *key, char *value, t_minishell *shell)
 {
@@ -23,17 +38,18 @@ int	set_env_value(char *key, char *value, t_minishell *shell)
 		if (ft_strncmp(current->key, key, ft_strlen(key)) == 0
 			&& ft_strlen(current->key) == ft_strlen(key))
 		{
-			free(current->value);
-			current->value = ft_strdup(value);
+			if (value)
+			{
+				free(current->value);
+				current->value = ft_strdup(value);
+			}
 			return (0);
 		}
 		current = current->next;
 	}
-	new_env = malloc(sizeof(t_env));
+	new_env = create_env_node(key, value);
 	if (!new_env)
 		return (1);
-	new_env->key = ft_strdup(key);
-	new_env->value = ft_strdup(value);
 	new_env->next = shell->env_list;
 	shell->env_list = new_env;
 	return (0);
