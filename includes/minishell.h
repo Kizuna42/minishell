@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:12:49 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:59:27 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,6 +201,10 @@ t_ast_node		*collect_redirections(t_ast_node *node, t_ast_node **redirects,
 					int *count);
 int				read_heredoc_lines(int pipefd[2], char *delimiter,
 					t_minishell *shell);
+int				handle_multiple_heredocs(t_ast_node **redirects, int count,
+					t_minishell *shell);
+int				process_single_heredoc(char *delimiter, t_minishell *shell,
+					int *final_fd);
 void			print_error(char *cmd, char *msg);
 void			perror_exit(char *msg);
 int				handle_directory_error(char *command);
