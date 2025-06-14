@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:09:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:52:22 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,22 @@ static int	execute_single_redirect(t_ast_node *redirect, t_minishell *shell)
 	return (result);
 }
 
-int	execute_redirect_list(t_ast_node **redirects, int count, t_minishell *shell)
+static int	check_for_heredocs(t_ast_node **redirects, int count)
+{
+	int	i;
+
+	i = 0;
+	while (i < count)
+	{
+		if (redirects[i]->type == NODE_REDIRECT_HEREDOC)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+static int	execute_non_heredoc_redirects(t_ast_node **redirects, int count,
+	t_minishell *shell)
 {
 	int	i;
 	int	result;
@@ -36,12 +51,28 @@ int	execute_redirect_list(t_ast_node **redirects, int count, t_minishell *shell)
 	i = 0;
 	while (i < count)
 	{
-		result = execute_single_redirect(redirects[i], shell);
-		if (result != 0)
-			return (result);
+		if (redirects[i]->type != NODE_REDIRECT_HEREDOC)
+		{
+			result = execute_single_redirect(redirects[i], shell);
+			if (result != 0)
+				return (result);
+		}
 		i++;
 	}
 	return (0);
+}
+
+int	execute_redirect_list(t_ast_node **redirects, int count, t_minishell *shell)
+{
+	int	result;
+
+	if (check_for_heredocs(redirects, count))
+	{
+		result = handle_multiple_heredocs(redirects, count, shell);
+		if (result != 0)
+			return (result);
+	}
+	return (execute_non_heredoc_redirects(redirects, count, shell));
 }
 
 int	is_redirect_node(t_ast_node *node)
