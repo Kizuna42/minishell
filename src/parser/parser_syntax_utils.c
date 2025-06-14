@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 03:57:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/01 04:11:19 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:09:46 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ int	check_first_token(t_token *current)
 	if (is_operator_token(current->type) && current->type != TOKEN_REDIRECT_IN
 		&& current->type != TOKEN_REDIRECT_OUT
 		&& current->type != TOKEN_REDIRECT_APPEND
-		&& current->type != TOKEN_REDIRECT_HEREDOC)
+		&& current->type != TOKEN_REDIRECT_HEREDOC
+		&& current->type != TOKEN_LPAREN)
 	{
 		print_syntax_error(current->value);
 		return (0);

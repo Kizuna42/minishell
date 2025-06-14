@@ -1,53 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipes.c                                            :+:      :+:    :+:   */
+/*   subshell.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:09:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:15:56 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static int	execute_left_child(t_ast_node *node, t_minishell *shell,
-	int pipefd[2])
+void	cleanup_child_fds(t_minishell *shell)
 {
-	setup_default_signal_handlers();
-	close(pipefd[0]);
-	dup2(pipefd[1], STDOUT_FILENO);
-	close(pipefd[1]);
 	if (shell->stdin_backup >= 0)
 		close(shell->stdin_backup);
 	if (shell->stdout_backup >= 0)
 		close(shell->stdout_backup);
-	exit(execute_ast(node->left, shell));
 }
 
-static int	execute_right_child(t_ast_node *node, t_minishell *shell,
-	int pipefd[2])
-{
-	setup_default_signal_handlers();
-	close(pipefd[1]);
-	dup2(pipefd[0], STDIN_FILENO);
-	close(pipefd[0]);
-	if (shell->stdin_backup >= 0)
-		close(shell->stdin_backup);
-	if (shell->stdout_backup >= 0)
-		close(shell->stdout_backup);
-	exit(execute_ast(node->right, shell));
-}
-
-static int	wait_and_handle_signals(pid_t left_pid, pid_t right_pid)
+int	handle_subshell_signals(pid_t pid)
 {
 	int	status;
 
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
-	waitpid(left_pid, NULL, 0);
-	waitpid(right_pid, &status, 0);
+	waitpid(pid, &status, 0);
 	setup_signal_handlers();
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 		write(STDERR_FILENO, "\n", 1);
@@ -58,21 +37,18 @@ static int	wait_and_handle_signals(pid_t left_pid, pid_t right_pid)
 	return (WEXITSTATUS(status));
 }
 
-int	execute_pipeline(t_ast_node *node, t_minishell *shell)
+int	execute_subshell(t_ast_node *node, t_minishell *shell)
 {
-	int		pipefd[2];
-	pid_t	left_pid;
-	pid_t	right_pid;
+	pid_t	pid;
 
-	if (pipe(pipefd) == -1)
-		return (1);
-	left_pid = fork();
-	if (left_pid == 0)
-		execute_left_child(node, shell, pipefd);
-	right_pid = fork();
-	if (right_pid == 0)
-		execute_right_child(node, shell, pipefd);
-	close(pipefd[0]);
-	close(pipefd[1]);
-	return (wait_and_handle_signals(left_pid, right_pid));
+	pid = fork();
+	if (pid == 0)
+	{
+		setup_default_signal_handlers();
+		cleanup_child_fds(shell);
+		exit(execute_ast(node->left, shell));
+	}
+	else if (pid > 0)
+		return (handle_subshell_signals(pid));
+	return (1);
 }
