@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:15:56 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 04:33:13 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,15 @@
 void	cleanup_child_fds(t_minishell *shell)
 {
 	if (shell->stdin_backup >= 0)
+	{
 		close(shell->stdin_backup);
+		shell->stdin_backup = -1;
+	}
 	if (shell->stdout_backup >= 0)
+	{
 		close(shell->stdout_backup);
+		shell->stdout_backup = -1;
+	}
 }
 
 int	handle_subshell_signals(pid_t pid)
