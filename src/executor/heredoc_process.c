@@ -6,51 +6,35 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 04:56:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 18:54:29 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 18:59:14 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-static int	process_single_heredoc_redirect(t_ast_node *redirect,
-	t_minishell *shell, int *final_fd)
-{
-	int	temp_fd;
-	int	result;
-
-	temp_fd = -1;
-	result = process_single_heredoc(redirect->filename, shell, &temp_fd);
-	if (result != 0)
-	{
-		if (temp_fd >= 0)
-			close(temp_fd);
-		if (*final_fd >= 0)
-			close(*final_fd);
-		return (result);
-	}
-	if (*final_fd >= 0)
-		close(*final_fd);
-	*final_fd = temp_fd;
-	return (0);
-}
 
 static int	process_heredoc_redirects(t_ast_node **redirects, int count,
 	t_minishell *shell, int *final_fd)
 {
 	int	i;
 	int	result;
+	int	last_heredoc_index;
 
-	i = count - 1;
-	while (i >= 0)
+	last_heredoc_index = find_last_heredoc_index(redirects, count);
+	i = 0;
+	while (i < count)
 	{
 		if (redirects[i]->type == NODE_REDIRECT_HEREDOC)
 		{
-			result = process_single_heredoc_redirect(redirects[i],
-					shell, final_fd);
+			if (i == last_heredoc_index)
+				result = process_single_heredoc(redirects[i]->filename,
+						shell, final_fd);
+			else
+				result = read_and_discard_heredoc(redirects[i]->filename,
+						shell);
 			if (result != 0)
 				return (result);
 		}
-		i--;
+		i++;
 	}
 	return (0);
 }

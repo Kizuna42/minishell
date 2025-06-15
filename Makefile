@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/06/15 18:31:19 by kizuna           ###   ########.fr        #
+#    Updated: 2025/06/15 18:59:31 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,6 +54,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/executor/heredoc_multi.c \
 		$(SRCDIR)/executor/heredoc_process.c \
 		$(SRCDIR)/executor/heredoc_input.c \
+		$(SRCDIR)/executor/heredoc_multi_utils.c \
 		$(SRCDIR)/executor/pipes.c \
 		$(SRCDIR)/executor/subshell.c \
 		$(SRCDIR)/utils/utils.c \
