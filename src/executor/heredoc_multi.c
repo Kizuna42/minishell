@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 04:51:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 16:29:22 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 17:50:02 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	print_heredoc_warning(char *delimiter)
 {
-	ft_putstr_fd("minishell: warning: here-document delimited by ",
+	ft_putstr_fd("bash: warning: here-document at line 1 delimited by ",
 		STDERR_FILENO);
 	ft_putstr_fd("end-of-file (wanted `", STDERR_FILENO);
 	ft_putstr_fd(delimiter, STDERR_FILENO);
@@ -64,7 +64,7 @@ static int	read_until_delimiter(int pipefd, char *delimiter,
 		if (!line)
 		{
 			print_heredoc_warning(trimmed_delimiter);
-			return (1);
+			return (0);
 		}
 		if (ft_strncmp(line, trimmed_delimiter,
 				ft_strlen(trimmed_delimiter)) == 0
