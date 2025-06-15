@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:52:22 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 16:33:36 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,6 @@ int	execute_redirect_list(t_ast_node **redirects, int count, t_minishell *shell)
 	return (execute_non_heredoc_redirects(redirects, count, shell));
 }
 
-int	is_redirect_node(t_ast_node *node)
-{
-	return (node && (node->type == NODE_REDIRECT_IN
-			|| node->type == NODE_REDIRECT_OUT
-			|| node->type == NODE_REDIRECT_APPEND
-			|| node->type == NODE_REDIRECT_HEREDOC));
-}
-
 t_ast_node	*collect_redirections(t_ast_node *node, t_ast_node **redirects,
 	int *count)
 {
@@ -95,12 +87,4 @@ t_ast_node	*collect_redirections(t_ast_node *node, t_ast_node **redirects,
 		cmd_node = cmd_node->left;
 	}
 	return (cmd_node);
-}
-
-void	restore_fds(int saved_stdin, int saved_stdout)
-{
-	dup2(saved_stdin, STDIN_FILENO);
-	dup2(saved_stdout, STDOUT_FILENO);
-	close(saved_stdin);
-	close(saved_stdout);
 }
