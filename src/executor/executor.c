@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 18:31:19 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 18:36:32 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ static int	handle_external_cmd(char **expanded_args, t_minishell *shell)
 		free_args(expanded_args);
 		return (exit_status);
 	}
-	exit_status = execute_external_command(path, expanded_args, shell->envp);
+	exit_status = execute_external_command(path, expanded_args, shell->envp,
+			shell);
 	free(path);
 	free_args(expanded_args);
 	return (exit_status);
