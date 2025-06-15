@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 04:51:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 17:51:03 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 17:57:41 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,24 @@ static void	print_heredoc_warning(char *delimiter)
 static char	*read_heredoc_input(void)
 {
 	char	*line;
+	int		tty_fd;
 
-	if (isatty(STDIN_FILENO))
+	tty_fd = open("/dev/tty", O_RDONLY);
+	if (tty_fd >= 0)
+	{
 		line = readline("> ");
+		close(tty_fd);
+	}
 	else
 	{
-		line = get_next_line(STDIN_FILENO);
-		if (line && line[ft_strlen(line) - 1] == '\n')
-			line[ft_strlen(line) - 1] = '\0';
+		if (isatty(STDIN_FILENO))
+			line = readline("> ");
+		else
+		{
+			line = get_next_line(STDIN_FILENO);
+			if (line && line[ft_strlen(line) - 1] == '\n')
+				line[ft_strlen(line) - 1] = '\0';
+		}
 	}
 	return (line);
 }
