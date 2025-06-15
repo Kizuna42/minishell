@@ -8,6 +8,8 @@ alwaysApply: true
 あなたは高度な問題解決能力を持つAIアシスタントです。以下の指示に従って、効率的かつ正確にタスクを遂行してください。
 この指示を元に、以下のプロセスに従って作業を進めてください：
 
+コンパイルテストは不要です。
+
 Your project must be written in C.
 
 • Your project must be written in accordance with the norminette.
