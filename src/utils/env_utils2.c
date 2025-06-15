@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 04:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:09:46 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 17:00:06 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,22 @@ static t_env	*create_env_node(char *key, char *value)
 	else
 		new_env->value = NULL;
 	return (new_env);
+}
+
+static void	add_env_to_end(t_env **env_list, t_env *new_env)
+{
+	t_env	*last;
+
+	new_env->next = NULL;
+	if (!*env_list)
+		*env_list = new_env;
+	else
+	{
+		last = *env_list;
+		while (last->next)
+			last = last->next;
+		last->next = new_env;
+	}
 }
 
 int	set_env_value(char *key, char *value, t_minishell *shell)
@@ -50,8 +66,7 @@ int	set_env_value(char *key, char *value, t_minishell *shell)
 	new_env = create_env_node(key, value);
 	if (!new_env)
 		return (1);
-	new_env->next = shell->env_list;
-	shell->env_list = new_env;
+	add_env_to_end(&shell->env_list, new_env);
 	return (0);
 }
 
