@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 18:42:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 19:14:08 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 19:44:32 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,13 @@ int	read_and_discard_heredoc(char *delimiter, t_minishell *shell)
 int	find_last_heredoc_index(t_ast_node **redirects, int count)
 {
 	int	i;
-	int	last_heredoc_index;
 
-	last_heredoc_index = -1;
 	i = 0;
 	while (i < count)
 	{
 		if (redirects[i]->type == NODE_REDIRECT_HEREDOC)
-			last_heredoc_index = i;
+			return (i);
 		i++;
 	}
-	return (last_heredoc_index);
+	return (-1);
 }
