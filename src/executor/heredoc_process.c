@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 04:56:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 05:00:10 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 16:29:04 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,4 @@ int	handle_multiple_heredocs(t_ast_node **redirects, int count,
 		close(final_fd);
 	}
 	return (0);
-} 
+}
