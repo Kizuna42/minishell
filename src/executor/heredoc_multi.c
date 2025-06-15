@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 04:51:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 19:29:55 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 19:40:28 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,22 +38,29 @@ static void	write_heredoc_line(int pipefd, char *line, char *delimiter,
 	write(pipefd, "\n", 1);
 }
 
-static int	handle_single_heredoc_input(int pipefd, char *delimiter,
+static int	read_until_delimiter(int pipefd, char *delimiter,
 	char *trimmed_delimiter, t_minishell *shell)
 {
 	char	*line;
 
-	line = read_heredoc_input();
-	if (!line)
+	while (1)
 	{
-		print_heredoc_warning(trimmed_delimiter);
-		return (0);
-	}
-	if (ft_strncmp(line, trimmed_delimiter, ft_strlen(trimmed_delimiter)) != 0
-		|| ft_strlen(line) != ft_strlen(trimmed_delimiter))
+		line = read_heredoc_input();
+		if (!line)
+		{
+			print_heredoc_warning(trimmed_delimiter);
+			return (0);
+		}
+		if (ft_strncmp(line, trimmed_delimiter,
+				ft_strlen(trimmed_delimiter)) == 0
+			&& ft_strlen(line) == ft_strlen(trimmed_delimiter))
+		{
+			free(line);
+			return (0);
+		}
 		write_heredoc_line(pipefd, line, delimiter, shell);
-	free(line);
-	return (0);
+		free(line);
+	}
 }
 
 int	process_single_heredoc(char *delimiter, t_minishell *shell,
@@ -61,15 +68,17 @@ int	process_single_heredoc(char *delimiter, t_minishell *shell,
 {
 	int		pipefd[2];
 	char	*trimmed_delimiter;
+	int		result;
 
 	if (pipe(pipefd) == -1)
 		return (1);
 	trimmed_delimiter = remove_quote_markers(delimiter);
-	handle_single_heredoc_input(pipefd[1], delimiter, trimmed_delimiter, shell);
+	result = read_until_delimiter(pipefd[1], delimiter,
+			trimmed_delimiter, shell);
 	free(trimmed_delimiter);
 	close(pipefd[1]);
 	if (*final_fd >= 0)
 		close(*final_fd);
 	*final_fd = pipefd[0];
-	return (0);
+	return (result);
 }
