@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 18:02:51 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 18:31:19 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ void			print_syntax_error(char *token);
 int				execute_ast(t_ast_node *ast, t_minishell *shell);
 int				execute_command(t_ast_node *node, t_minishell *shell);
 int				execute_pipeline(t_ast_node *node, t_minishell *shell);
+int				execute_external_command(char *path, char **args, char **envp);
 int				execute_redirections(t_ast_node *node, t_minishell *shell);
 int				execute_logical_ops(t_ast_node *node, t_minishell *shell);
 int				execute_subshell(t_ast_node *node, t_minishell *shell);

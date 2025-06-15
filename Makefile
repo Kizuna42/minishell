@@ -6,7 +6,7 @@
 #    By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#              #
-#    Updated: 2025/06/15 18:02:55 by kizuna           ###   ########.fr        #
+#    Updated: 2025/06/15 18:31:19 by kizuna           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,6 +43,7 @@ SRCS = $(SRCDIR)/main.c \
 		$(SRCDIR)/parser/parser_mixed_utils.c \
 		$(SRCDIR)/executor/executor.c \
 		$(SRCDIR)/executor/executor_logical.c \
+		$(SRCDIR)/executor/executor_external.c \
 		$(SRCDIR)/executor/builtin.c \
 		$(SRCDIR)/executor/builtin_commands.c \
 		$(SRCDIR)/executor/builtin_extra.c \
