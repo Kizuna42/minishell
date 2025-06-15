@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:33:57 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 18:06:13 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ int	execute_pipeline(t_ast_node *node, t_minishell *shell)
 	left_pid = fork();
 	if (left_pid == 0)
 		execute_left_child(node, shell, pipefd);
+	usleep(10000);
 	right_pid = fork();
 	if (right_pid == 0)
 		execute_right_child(node, shell, pipefd);
