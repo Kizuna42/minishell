@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 18:01:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 19:26:45 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 19:50:45 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,19 @@ char	*read_heredoc_input(void)
 {
 	char	*line;
 
-	line = read_from_tty();
-	if (line)
-		return (line);
 	if (isatty(STDIN_FILENO))
+	{
 		line = readline("> ");
+		return (line);
+	}
 	else
 	{
+		line = read_from_tty();
+		if (line)
+			return (line);
 		line = get_next_line(STDIN_FILENO);
 		if (line && line[ft_strlen(line) - 1] == '\n')
 			line[ft_strlen(line) - 1] = '\0';
+		return (line);
 	}
-	return (line);
 }
