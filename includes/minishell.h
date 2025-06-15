@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 17:13:48 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 17:18:12 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,10 +188,6 @@ char			*expand_variables_split(char *str, t_minishell *shell);
 char			*extract_quoted_string_split(char *str, int *i);
 void			process_variable(char **result, int *i, t_minishell *shell);
 void			handle_dollar_quote(char **result, int *i);
-void			process_command_substitution(char **result, int *i,
-					t_minishell *shell);
-char			*execute_command_substitution(char *command,
-					t_minishell *shell);
 char			*get_variable_value(char *var_name, t_minishell *shell);
 int				should_free_var_value(char *var_name);
 int				should_skip_variable(char *result, int i);

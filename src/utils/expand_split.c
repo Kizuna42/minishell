@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 17:13:11 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 17:18:14 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,7 @@ static void	process_character(char **result, int *i, int *in_single_quote,
 		handle_quote_marker(*result, i, in_single_quote);
 		return ;
 	}
-	if ((*result)[*i] == '$' && (*result)[*i + 1] == '('
-		&& !(*in_single_quote))
-		process_command_substitution(result, i, shell);
-	else if ((*result)[*i] == '$' && (*result)[*i + 1] && !(*in_single_quote)
+	if ((*result)[*i] == '$' && (*result)[*i + 1] && !(*in_single_quote)
 		&& (ft_isalnum((*result)[*i + 1]) || (*result)[*i + 1] == '_'
 		|| (*result)[*i + 1] == '?' || (*result)[*i + 1] == '$'))
 		process_variable(result, i, shell);
