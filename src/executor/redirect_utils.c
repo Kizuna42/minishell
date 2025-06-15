@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 16:34:45 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 17:23:42 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,25 @@
 
 static int	execute_single_redirect(t_ast_node *redirect, t_minishell *shell)
 {
-	int	result;
+	char	*expanded_filename;
+	int		result;
 
 	result = 0;
+	if (redirect->type == NODE_REDIRECT_HEREDOC)
+		expanded_filename = ft_strdup(redirect->filename);
+	else
+		expanded_filename = expand_variables(redirect->filename, shell);
+	if (!expanded_filename)
+		return (1);
 	if (redirect->type == NODE_REDIRECT_IN)
-		result = handle_input_redirect(redirect->filename);
+		result = handle_input_redirect(expanded_filename);
 	else if (redirect->type == NODE_REDIRECT_OUT)
-		result = handle_output_redirect(redirect->filename, 0);
+		result = handle_output_redirect(expanded_filename, 0);
 	else if (redirect->type == NODE_REDIRECT_APPEND)
-		result = handle_output_redirect(redirect->filename, 1);
+		result = handle_output_redirect(expanded_filename, 1);
 	else if (redirect->type == NODE_REDIRECT_HEREDOC)
-		result = handle_heredoc(redirect->filename, shell);
+		result = handle_heredoc(expanded_filename, shell);
+	free(expanded_filename);
 	return (result);
 }
 
