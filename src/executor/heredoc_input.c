@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 18:01:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 19:18:41 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 19:22:09 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static char	*read_from_tty(void)
 		return (NULL);
 	saved_stdin = dup(STDIN_FILENO);
 	dup2(tty_fd, STDIN_FILENO);
-	line = readline("");
+	line = readline("> ");
 	dup2(saved_stdin, STDIN_FILENO);
 	close(saved_stdin);
 	close(tty_fd);
@@ -38,7 +38,7 @@ char	*read_heredoc_input(void)
 	if (line)
 		return (line);
 	if (isatty(STDIN_FILENO))
-		line = readline("");
+		line = readline("> ");
 	else
 	{
 		line = get_next_line(STDIN_FILENO);
