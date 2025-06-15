@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:09:45 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 18:31:19 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,35 +29,6 @@ int	execute_ast(t_ast_node *ast, t_minishell *shell)
 	else if (ast->type == NODE_SUBSHELL)
 		return (execute_subshell(ast, shell));
 	return (0);
-}
-
-static int	execute_external_command(char *path, char **args, char **envp)
-{
-	pid_t	pid;
-	int		status;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		setup_default_signal_handlers();
-		execve(path, args, envp);
-		perror_exit("execve");
-	}
-	else if (pid > 0)
-	{
-		signal(SIGINT, SIG_IGN);
-		signal(SIGQUIT, SIG_IGN);
-		waitpid(pid, &status, 0);
-		setup_signal_handlers();
-		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-			write(STDERR_FILENO, "\n", 1);
-		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
-			write(STDERR_FILENO, "Quit (core dumped)\n", 19);
-		if (WIFSIGNALED(status))
-			return (128 + WTERMSIG(status));
-		return (WEXITSTATUS(status));
-	}
-	return (1);
 }
 
 static int	handle_builtin_cmd(char **expanded_args, t_minishell *shell)
