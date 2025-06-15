@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:12:10 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 16:46:25 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,11 @@ int	handle_cd_error(char *path)
 	char	*error_msg;
 
 	if (errno == EACCES)
-		print_error("cd", "Permission denied");
+	{
+		error_msg = ft_strjoin(path, ": Permission denied");
+		print_error("cd", error_msg);
+		free(error_msg);
+	}
 	else if (errno == ENOENT)
 	{
 		error_msg = ft_strjoin(path, ": No such file or directory");
