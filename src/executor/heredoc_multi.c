@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/15 04:51:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 19:28:33 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/15 19:29:55 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,31 +36,6 @@ static void	write_heredoc_line(int pipefd, char *line, char *delimiter,
 	else
 		write(pipefd, line, ft_strlen(line));
 	write(pipefd, "\n", 1);
-}
-
-static int	read_until_delimiter(int pipefd, char *delimiter,
-	char *trimmed_delimiter, t_minishell *shell)
-{
-	char	*line;
-
-	while (1)
-	{
-		line = read_heredoc_input();
-		if (!line)
-		{
-			print_heredoc_warning(trimmed_delimiter);
-			return (0);
-		}
-		if (ft_strncmp(line, trimmed_delimiter,
-				ft_strlen(trimmed_delimiter)) == 0
-			&& ft_strlen(line) == ft_strlen(trimmed_delimiter))
-		{
-			free(line);
-			return (0);
-		}
-		write_heredoc_line(pipefd, line, delimiter, shell);
-		free(line);
-	}
 }
 
 static int	handle_single_heredoc_input(int pipefd, char *delimiter,
