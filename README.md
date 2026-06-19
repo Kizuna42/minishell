@@ -18,6 +18,10 @@
 コマンドラインを字句解析 → 構文解析(AST) → 実行の 3 段で処理します。設計の詳細は
 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**、動作テストは `make test` を参照してください。
 
+<p align="center">
+  <img src="docs/demo.gif" alt="minishell demo — pipes, redirections, here-docs and variable expansion" width="85%">
+</p>
+
 ### 🎯 実装範囲
 
 - **コマンド実行**: 外部コマンドの実行と PATH 解決
