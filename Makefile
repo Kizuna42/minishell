@@ -18,6 +18,19 @@ CFLAGS = -Wall -Wextra -Werror -I./includes -I./libft
 BONUS_CFLAGS = -Wall -Wextra -Werror -I./includes -I./libft -DBONUS
 LDFLAGS = -lreadline
 
+# macOS: readline is keg-only under Homebrew, so add its include/lib paths.
+# On Linux (42 evaluation) uname is not Darwin and this block is skipped,
+# leaving the original flags untouched.
+UNAME_S = $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	READLINE_DIR = $(shell brew --prefix readline 2>/dev/null)
+	ifneq ($(READLINE_DIR),)
+		CFLAGS += -I$(READLINE_DIR)/include
+		BONUS_CFLAGS += -I$(READLINE_DIR)/include
+		LDFLAGS += -L$(READLINE_DIR)/lib
+	endif
+endif
+
 # Directories
 SRCDIR = src
 INCDIR = includes
@@ -142,4 +155,8 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus
+test: all
+	@echo "$(GREEN)Running test suite...$(RESET)"
+	@MINISHELL=./$(NAME) bash test.sh
+
+.PHONY: all clean fclean re bonus test
