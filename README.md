@@ -1,5 +1,6 @@
 # 🐚 Minishell — a bash subset, rebuilt in C
 
+[![CI](https://github.com/Kizuna42/minishell/actions/workflows/ci.yml/badge.svg)](https://github.com/Kizuna42/minishell/actions/workflows/ci.yml)
 ![language](https://img.shields.io/badge/language-C-blue.svg)
 ![norm](https://img.shields.io/badge/42-norminette-success.svg)
 ![flags](https://img.shields.io/badge/build-Wall%20Wextra%20Werror-brightgreen.svg)
