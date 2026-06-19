@@ -6,7 +6,7 @@
 /*   By: kizuna <kizuna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 20:00:00 by kizuna            #+#    #+#             */
-/*   Updated: 2025/06/15 04:36:51 by kizuna           ###   ########.fr       */
+/*   Updated: 2025/06/17 18:37:42 by kizuna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,11 @@ void	process_input(char *input, t_minishell *shell)
 	t_ast_node	*ast;
 	int			syntax_error;
 
+	if (g_signal_status == 130)
+	{
+		shell->last_exit_status = 130;
+		g_signal_status = 0;
+	}
 	if (!input || !*input)
 		return ;
 	if (isatty(STDIN_FILENO))
