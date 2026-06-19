@@ -1,0 +1,26 @@
+# ---- Build artifacts ----
+obj/
+obj_bonus/
+*.o
+*.a
+minishell
+minishell_bonus
+
+# libft build output
+libft/*.a
+
+# ---- Editor / IDE ----
+.cursor/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- OS ----
+.DS_Store
+
+# ---- Test / runtime scratch ----
+output.txt
+*.tmp
+*.out
