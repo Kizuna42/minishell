@@ -80,7 +80,7 @@ Operator precedence is expressed by the nesting of the recursive-descent parser 
 ```text
 control   := pipeline (('&&' | '||' | ';' | '&') control)?
 pipeline  := command ('|' command)*
-command   := (WORD | redirection)*
+command   := (WORD | redirect)*
 redirect  := ('<' | '>' | '>>' | '<<') WORD
 ```
 

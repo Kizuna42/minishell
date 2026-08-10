@@ -103,7 +103,7 @@ typedef struct s_minishell {    // シェル全体の状態
 ```text
 control   := pipeline (('&&' | '||' | ';' | '&') control)?
 pipeline  := command ('|' command)*
-command   := (WORD | redirection)*
+command   := (WORD | redirect)*
 redirect  := ('<' | '>' | '>>' | '<<') WORD
 ```
 
@@ -112,7 +112,7 @@ redirect  := ('<' | '>' | '>>' | '<<') WORD
 
 | 文法規則 | 実装関数 | ファイル |
 | --- | --- | --- |
-| `control`   | `parse_logical_ops()`  | `parser/parser_logical.c` |
+| `control`   | `parse_logical_ops()`  | `src/bonus/logical_ops.c` |
 | `pipeline`  | `parse_pipeline()`     | `parser/parser.c` |
 | `command`   | `parse_command()`      | `parser/parser_command.c` |
 | `redirect`  | `parse_redirections()` | `parser/parser_redirect.c` |
