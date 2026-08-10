@@ -39,8 +39,8 @@ standard POSIX primitives (`fork`, `execve`, `pipe`, `dup2`, `waitpid`).
 ## Features
 
 - **Command execution** — external commands resolved via `PATH` and run with `fork`/`execve`.
-- **Builtins** (run in the parent process, no subshell): `echo` (with `-n`), `cd`, `pwd`,
-  `export`, `unset`, `env`, `exit`.
+- **Builtins** — run in the parent process when no pipeline is present; pipeline stages run
+  in forked child processes: `echo` (with `-n`), `cd`, `pwd`, `export`, `unset`, `env`, `exit`.
 - **Pipelines** — arbitrary `cmd1 | cmd2 | ...` chains via `pipe(2)` + `dup2(2)`.
 - **Redirections** — `<`, `>`, `>>`, and `<<` (here-document).
 - **Variable expansion** — `$VAR`, `$?`, `$$`, tilde expansion, with quoting rules that match
@@ -48,7 +48,8 @@ standard POSIX primitives (`fork`, `execve`, `pipe`, `dup2`, `waitpid`).
 - **Signal handling** — `Ctrl-C` resets the prompt and sets `$?` to 130 (bash-compatible),
   `Ctrl-\` is ignored while interactive, and both are restored to default behaviour inside
   child processes so signals reach the running command.
-- **Bonus: logical operators** — `&&`, `||`, `;` with correct short-circuit semantics.
+- **Bonus: control operators** — `&&`, `||`, `;`, and `&`. A single `&&` or `||` short-circuits;
+  mixed logical chains have a documented associativity difference from `bash` (see [Notes](#notes)).
 - **Bonus: wildcards** — `*` glob expansion for unquoted words.
 
 ## Architecture & Implementation
@@ -76,12 +77,15 @@ flowchart LR
 Operator precedence is expressed by the nesting of the recursive-descent parser functions
 (lowest precedence first):
 
-```
-logical   := pipeline (('&&' | '||' | ';') pipeline)*
+```text
+control   := pipeline (('&&' | '||' | ';' | '&') control)?
 pipeline  := command ('|' command)*
 command   := (WORD | redirection)*
 redirect  := ('<' | '>' | '>>' | '<<') WORD
 ```
+
+All four control operators share one parser level. The right operand recurses into `control`,
+so chains are right-associative in the current implementation.
 
 `ls -la | grep .c > out.txt` becomes:
 
@@ -99,14 +103,14 @@ consecutive pipes, a trailing operator, or a missing redirection target without 
 
 ```c
 typedef struct s_token {        // lexer output (linked list)
-    t_token_type    type;       // WORD / PIPE / REDIRECT_* / AND / OR / ...
+    t_token_type    type;       // WORD / PIPE / REDIRECT_* / AND / OR / SEMICOLON / BACKGROUND
     char            *value;
     int             quote_type; // QUOTE_NONE / SINGLE / DOUBLE
     struct s_token  *next;
 } t_token;
 
 typedef struct s_ast_node {     // parser output (binary tree)
-    t_node_type         type;   // COMMAND / PIPE / REDIRECT_* / AND / OR / SUBSHELL
+    t_node_type         type;   // COMMAND / PIPE / REDIRECT_* / AND / OR / SEMICOLON / BACKGROUND
     char                **args; // argv for a COMMAND node
     char                *filename; // target file / heredoc delimiter for a REDIRECT node
     struct s_ast_node   *left;
@@ -115,23 +119,24 @@ typedef struct s_ast_node {     // parser output (binary tree)
 
 typedef struct s_minishell {    // shell-wide state
     t_env   *env_list;          // environment (linked list)
-    char    **envp;             // array kept in sync for execve(2)
+    char    **envp;             // startup snapshot passed to execve(2)
     int     last_exit_status;   // $?
     int     stdin_backup;
     int     stdout_backup;
 } t_minishell;
 ```
 
-The environment is kept both as a linked list and as a `char **` array: the list makes
-`export`/`unset` easy to mutate, and the array is what gets rebuilt (`env_to_array()`) and
-handed to `execve(2)`.
+The environment is kept both as a linked list and as a `char **` array. Builtins and variable
+expansion read the mutable list. `env_to_array()` creates the array at startup, but the current
+implementation does not rebuild it after `export`/`unset`; external commands therefore receive
+the startup environment snapshot (see [Notes](#notes)).
 
 ### Execution dispatch
 
 ```mermaid
 flowchart TD
     A[execute_ast] -->|NODE_PIPE| P[execute_pipeline]
-    A -->|NODE_AND/OR/SEMICOLON| LG[execute_logical_ops]
+    A -->|NODE_AND/OR/SEMICOLON/BACKGROUND| LG[execute_logical_ops]
     A -->|NODE_REDIRECT_*| RD[execute_redirections]
     A -->|NODE_COMMAND| C{builtin?}
     C -->|yes| BI["execute_builtin<br/>(parent process)"]
@@ -142,7 +147,8 @@ flowchart TD
   `fork()` → `execve()` → `waitpid()`, feeding the exit status back into `$?`.
 - **Builtins** — run in the *parent* process when there is no pipeline around them, because
   `cd` / `export` / `unset` / `exit` need to mutate the shell's own state; running them in a
-  forked child would make the change invisible to the parent shell.
+  forked child would make the change invisible to the parent shell. When used as a pipeline
+  stage, a builtin runs in a forked child like every other stage.
 - **Pipelines** — each stage of `cmd1 | cmd2 | ...` is forked, with `dup2(2)` wiring stdin/
   stdout through a `pipe(2)`; the parent closes its copies of both ends and waits for every
   child.
@@ -197,7 +203,8 @@ excluded from the automated comparison because it reads from the controlling ter
 ./minishell
 ```
 
-At the `minishell$ ` prompt, input works like an interactive bash session:
+At the `minishell$` prompt, input works like an interactive bash session within the supported
+subset:
 
 ```bash
 minishell$ ls | grep .c | wc -l
@@ -206,7 +213,8 @@ minishell$ cat << EOF
 > multi-line
 > input
 > EOF
-minishell$ cmd1 && cmd2 || cmd3
+minishell$ true && echo ok
+minishell$ false || echo recovered
 minishell$ echo *.c
 ```
 
@@ -222,8 +230,15 @@ minishell$ echo *.c
 
 ## Notes
 
-Known differences from bash (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), §8, for the
-source of truth):
+Known differences from bash (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), §8, for more
+implementation context):
+
+- `&&`, `||`, `;`, and `&` share one parser level and are right-associative. Mixed chains such
+  as `false && echo no || echo yes` can therefore differ from `bash`; use separate commands
+  when left-to-right shell semantics matter.
+- `export`/`unset` update the shell's linked-list environment used by builtins and expansion,
+  but the `execve(2)` array remains the startup snapshot. An external command such as
+  `/usr/bin/env` does not observe those later mutations.
 
 - Heredoc reads its body from the controlling terminal, so piping an entire script into
   `minishell`'s stdin (e.g. `printf '... << EOF ...' | minishell`) will not feed the heredoc

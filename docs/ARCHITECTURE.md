@@ -72,7 +72,7 @@ typedef struct s_token {        // 字句解析の出力(連結リスト)
 } t_token;
 
 typedef struct s_ast_node {     // 構文解析の出力(二分木)
-    t_node_type        type;    // COMMAND / PIPE / REDIRECT_* / AND / OR / SUBSHELL
+    t_node_type        type;    // COMMAND / PIPE / REDIRECT_* / AND / OR / SEMICOLON / BACKGROUND
     char             **args;    // COMMAND ノードの argv
     char              *filename;// REDIRECT ノードの対象ファイル / heredoc 区切り
     struct s_ast_node *left;
@@ -81,16 +81,17 @@ typedef struct s_ast_node {     // 構文解析の出力(二分木)
 
 typedef struct s_minishell {    // シェル全体の状態
     t_env  *env_list;           // 環境変数(連結リスト)
-    char  **envp;               // execve(2) 用に同期した配列
+    char  **envp;               // 起動時に作る execve(2) 用スナップショット
     int     last_exit_status;   // $? の値
     int     stdin_backup;       // リダイレクト復元用
     int     stdout_backup;
 } t_minishell;
 ```
 
-環境変数を「連結リスト(`t_env`)」と「`char **envp` 配列」の二重持ちにしているのは、
-`export`/`unset` での増減を扱いやすくしつつ、`execve(2)` には配列がそのまま渡せるようにするため。
-変更時に `env_to_array()` で配列を再構築して同期する。
+環境変数は「連結リスト (`t_env`)」と「`char **envp` 配列」の二重持ちになっている。
+連結リストは `export`/`unset` と変数展開に使う。一方、`env_to_array()` は初期化時に一度だけ
+呼ばれ、現在の実装では変更後に配列を再構築しない。このため `execve(2)` で起動する外部
+コマンドには起動時の環境スナップショットが渡る（既知の差異は §8 を参照）。
 
 ---
 
@@ -99,16 +100,19 @@ typedef struct s_minishell {    // シェル全体の状態
 演算子の結合優先度を、関数呼び出しの入れ子で自然に表現している
 （上ほど優先度が低い）。
 
-```
-logical   := pipeline (('&&' | '||' | ';') pipeline)*
+```text
+control   := pipeline (('&&' | '||' | ';' | '&') control)?
 pipeline  := command ('|' command)*
 command   := (WORD | redirection)*
 redirect  := ('<' | '>' | '>>' | '<<') WORD
 ```
 
+`&&` / `||` / `;` / `&` は同じ階層で扱われ、右辺を `parse_logical_ops()` で再帰的に
+解析するため右結合になる。これは bash の混在論理チェーンの左結合とは異なる。
+
 | 文法規則 | 実装関数 | ファイル |
 | --- | --- | --- |
-| `logical`   | `parse_logical_ops()`  | `parser/parser_logical.c` |
+| `control`   | `parse_logical_ops()`  | `parser/parser_logical.c` |
 | `pipeline`  | `parse_pipeline()`     | `parser/parser.c` |
 | `command`   | `parse_command()`      | `parser/parser_command.c` |
 | `redirect`  | `parse_redirections()` | `parser/parser_redirect.c` |
@@ -138,7 +142,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[execute_ast] -->|NODE_PIPE| P[execute_pipeline]
-    A -->|NODE_AND/OR/SEMICOLON| LG[execute_logical_ops]
+    A -->|NODE_AND/OR/SEMICOLON/BACKGROUND| LG[execute_logical_ops]
     A -->|NODE_REDIRECT_*| RD[execute_redirections]
     A -->|NODE_COMMAND| C{builtin?}
     C -->|yes| BI[execute_builtin<br/>親プロセスで実行]
@@ -147,9 +151,10 @@ flowchart TD
 
 - **外部コマンド**: `find_command_path()` が `PATH` を走査して実体を解決し、
   `fork()` → `execve()` → `waitpid()`。終了ステータスを `$?` に反映する。
-- **ビルトイン**: リダイレクトが無い単独実行時は **親プロセス**で実行する。
+- **ビルトイン**: パイプライン外の単独実行時は **親プロセス**で実行する。
   `cd`/`export`/`unset`/`exit` はシェル自身の状態を変える必要があるため、
-  子プロセスでは効果が消えてしまうのがその理由。
+  子プロセスでは効果が消えてしまうのがその理由。パイプラインの一段として使う場合は、
+  他の段と同様に fork された子プロセスで実行する。
 - **パイプライン**: `pipe(2)` で接続し、各辺を `fork` して `dup2(2)` で
   stdin/stdout を張り替える。親は両 FD を閉じてから両子を待つ。
 - **リダイレクト**: 実行前に `stdin_backup`/`stdout_backup` へ退避し、`open`+`dup2`
@@ -169,7 +174,7 @@ flowchart TD
 
 字句解析の後、各 WORD は展開パイプラインを通る。
 
-```
+```text
 $VAR / $? / $$ の展開  →  ~ のチルダ展開  →  クォート除去  →  (未クォート時) グロブ
 ```
 
@@ -221,6 +226,10 @@ extern volatile sig_atomic_t  g_signal_status;   // 唯一許可されるグロ�
   パイプした場合（`printf '... << EOF ...' | minishell`）は本文を取り込めない。
   対話実行・テスト実行では期待どおり動作する。
 - ジョブ制御（`fg`/`bg`/`&` の完全なジョブ管理）は未対応。
+- `&&` / `||` / `;` / `&` は同一階層の右結合で解析されるため、混在チェーンの評価順は
+  bash と異なる場合がある。
+- `export`/`unset` 後も外部コマンドに渡す `envp` は起動時のスナップショットのままで、
+  後から追加・削除した変数は `/usr/bin/env` などの外部コマンドには反映されない。
 - 算術展開 `$(())`・コマンド置換 `$(...)` は対象外（課題スコープ外）。
 
 ---
