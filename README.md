@@ -1,4 +1,4 @@
-# 🐚 Minishell — a bash subset, rebuilt in C
+# minishell
 
 [![CI](https://github.com/Kizuna42/minishell/actions/workflows/ci.yml/badge.svg)](https://github.com/Kizuna42/minishell/actions/workflows/ci.yml)
 ![language](https://img.shields.io/badge/language-C-blue.svg)
@@ -6,347 +6,230 @@
 ![flags](https://img.shields.io/badge/build-Wall%20Wextra%20Werror-brightgreen.svg)
 ![platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey.svg)
 
-> **TL;DR (EN):** A from-scratch Unix shell written in C as a [42](https://42tokyo.jp/)
-> project. It tokenizes a command line, parses it into an **AST**, and walks the tree
-> to execute commands with full `fork`/`execve`, pipelines, redirections,
-> here-documents, environment-variable expansion, quoting, seven builtins, and signal
-> handling — plus `&&`/`||`/`;` and `*` globbing as bonus. ~4,300 lines across 60
-> files, leak-checked with Valgrind, compiled with `-Wall -Wextra -Werror`.
-> Design notes: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
-
-本プロジェクトは **bash のサブセットを C で一から再実装したシェル**です（42 課題）。
-コマンドラインを字句解析 → 構文解析(AST) → 実行の 3 段で処理します。設計の詳細は
-**[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**、動作テストは `make test` を参照してください。
+A bash-subset shell written from scratch in C, built as a [42](https://42tokyo.jp/) school
+project. It turns a command line into an **AST** through a lexer/parser split and walks the
+tree to execute pipelines, redirections, here-documents, variable expansion, quoting, and
+seven builtins with proper signal handling — plus `&&` / `||` / `;` and `*` globbing as bonus.
 
 <p align="center">
   <img src="docs/demo.gif" alt="minishell demo — pipes, redirections, here-docs and variable expansion" width="85%">
 </p>
 
-### 🎯 実装範囲
-
-- **コマンド実行**: 外部コマンドの実行と PATH 解決
-- **ビルトインコマンド**: `echo`, `cd`, `pwd`, `export`, `unset`, `env`, `exit`
-- **パイプライン**: コマンド間のデータフロー (`|`)
-- **リダイレクション**: 入力/出力のファイルリダイレクト (`<`, `>`, `>>`)
-- **ヒアドキュメント**: 複数行入力 (`<<`)
-- **環境変数**: 変数の展開と管理 (`$VAR`)
-- **クォート処理**: シングル・ダブルクォート内の文字列処理
-- **シグナル処理**: `Ctrl+C`, `Ctrl+D`, `Ctrl+\`
-- **論理演算子** (bonus): `&&`, `||`, `;`
-- **ワイルドカード** (bonus): `*` パターンマッチング
+For the full design write-up (grammar, data structures, execution model, memory ownership,
+known deviations from bash) see **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
 ---
 
-## 🚀 動作イメージ・例
+## Overview
 
-基本的なコマンド実行：
+`minishell` re-implements a subset of `bash` as a tree-walking interpreter. Each input line is
+processed in three stages — **lex → parse → execute** — and the underlying process model uses
+standard POSIX primitives (`fork`, `execve`, `pipe`, `dup2`, `waitpid`).
 
-```bash
-minishell$ ls -la
-total 16
-drwxr-xr-x  4 kizuna kizuna  128 Jan 25 20:00 .
-drwxr-xr-x  3 kizuna kizuna   96 Jan 25 19:00 ..
--rw-r--r--  1 kizuna kizuna 1234 Jan 25 20:00 README.md
--rw-r--r--  1 kizuna kizuna 4567 Jan 25 20:00 Makefile
-```
+- Source: ~4,300 lines across 60 `.c` files under `src/` (plus a small self-written `libft`).
+- Built with `-Wall -Wextra -Werror` and kept 42-Norm compliant (function length, file
+  length, argument count limits), which is why functionality is split into many small,
+  single-purpose files.
+- CI (`.github/workflows/ci.yml`) builds the mandatory and bonus targets and runs the test
+  suite on every push/PR to `main`.
+- The behavioural test suite (`test.sh`, run via `make test`) compares `minishell` output
+  against real `bash` for 26 cases covering command execution, pipes, redirections, variable
+  expansion, builtins, and the bonus logical/wildcard operators.
 
-パイプラインとリダイレクション：
+## Features
 
-```bash
-minishell$ ls | grep .c > output.txt
-minishell$ cat output.txt
-main.c
-parser.c
-executor.c
-```
+- **Command execution** — external commands resolved via `PATH` and run with `fork`/`execve`.
+- **Builtins** (run in the parent process, no subshell): `echo` (with `-n`), `cd`, `pwd`,
+  `export`, `unset`, `env`, `exit`.
+- **Pipelines** — arbitrary `cmd1 | cmd2 | ...` chains via `pipe(2)` + `dup2(2)`.
+- **Redirections** — `<`, `>`, `>>`, and `<<` (here-document).
+- **Variable expansion** — `$VAR`, `$?`, `$$`, tilde expansion, with quoting rules that match
+  bash (single quotes are literal, double quotes expand `$` but not globs).
+- **Signal handling** — `Ctrl-C` resets the prompt and sets `$?` to 130 (bash-compatible),
+  `Ctrl-\` is ignored while interactive, and both are restored to default behaviour inside
+  child processes so signals reach the running command.
+- **Bonus: logical operators** — `&&`, `||`, `;` with correct short-circuit semantics.
+- **Bonus: wildcards** — `*` glob expansion for unquoted words.
 
-環境変数の展開：
-
-```bash
-minishell$ echo "Hello $USER, your home is $HOME"
-Hello kizuna, your home is /Users/kizuna
-```
-
-ヒアドキュメント：
-
-```bash
-minishell$ cat << EOF
-> This is a
-> multi-line
-> input
-> EOF
-This is a
-multi-line
-input
-```
-
----
-
-## ⚙️ セットアップ方法
-
-### ビルド方法
-
-```bash
-# 基本版のビルド
-make
-
-# ボーナス機能付きビルド
-make bonus
-
-# クリーンビルド
-make fclean && make
-```
-
-### テスト方法
-
-```bash
-# bash と出力を突き合わせる自動テスト（26 ケース）
-make test
-
-# 手動での動作確認
-./minishell
-./minishell_bonus      # ボーナス版
-
-# Valgrind でメモリリーク検査
-valgrind --leak-check=full ./minishell
-```
-
----
-
-## 📖 使用方法
-
-### 起動方法
-
-```bash
-./minishell
-```
-
-プロンプト `minishell$ ` が表示されたら、通常の bash と同様にコマンドを入力できます。
-
-### サポートされるビルトインコマンド
-
-| コマンド | 説明                              | 使用例               |
-| -------- | --------------------------------- | -------------------- |
-| `echo`   | 文字列を出力 (`-n`オプション対応) | `echo "Hello World"` |
-| `cd`     | ディレクトリ変更                  | `cd /path/to/dir`    |
-| `pwd`    | 現在のディレクトリを表示          | `pwd`                |
-| `export` | 環境変数を設定・表示              | `export VAR=value`   |
-| `unset`  | 環境変数を削除                    | `unset VAR`          |
-| `env`    | 環境変数一覧を表示                | `env`                |
-| `exit`   | シェルを終了                      | `exit [code]`        |
-
-### リダイレクト・パイプの記法
-
-```bash
-# 出力リダイレクト
-command > file.txt
-
-# 追記リダイレクト
-command >> file.txt
-
-# 入力リダイレクト
-command < input.txt
-
-# ヒアドキュメント
-command << DELIMITER
-
-# パイプライン
-command1 | command2 | command3
-```
-
-### ボーナス機能
-
-```bash
-# 論理演算子
-command1 && command2    # command1が成功した場合のみcommand2を実行
-command1 || command2    # command1が失敗した場合のみcommand2を実行
-command1 ; command2     # command1の結果に関係なくcommand2を実行
-
-# ワイルドカード
-ls *.c                  # .cで終わるファイルを表示
-echo test_*             # test_で始まるファイル/ディレクトリを表示
-```
-
----
-
-## 🗂️ プロジェクト構成
-
-### ディレクトリ構造
-
-```
-minishell/
-├── Makefile                    # ビルド設定ファイル
-├── README.md                   # プロジェクト説明書
-├── includes/
-│   └── minishell.h            # メインヘッダーファイル
-├── libft/                     # 自作ライブラリ
-│   ├── Makefile
-│   ├── libft.h
-│   └── src/                   # libft関数群
-├── src/
-│   ├── main.c                 # プログラムエントリポイント
-│   ├── main_utils.c           # メイン補助関数
-│   ├── lexer/                 # 字句解析モジュール
-│   │   ├── lexer.c           # トークナイザー
-│   │   ├── lexer_utils.c     # 字句解析補助
-│   │   ├── lexer_quote.c     # クォート処理
-│   │   └── tokenizer.c       # トークン生成
-│   ├── parser/               # 構文解析モジュール
-│   │   ├── parser.c          # AST構築
-│   │   ├── parser_*.c        # 各種パーサー機能
-│   │   └── ...
-│   ├── executor/             # 実行エンジンモジュール
-│   │   ├── executor.c        # メイン実行部
-│   │   ├── builtin*.c        # ビルトインコマンド
-│   │   ├── pipes.c           # パイプ処理
-│   │   ├── redirections.c    # リダイレクト処理
-│   │   └── ...
-│   ├── utils/                # ユーティリティモジュール
-│   │   ├── env_*.c           # 環境変数管理
-│   │   ├── expand_*.c        # 変数展開
-│   │   ├── wildcard*.c       # ワイルドカード処理
-│   │   └── ...
-│   └── bonus/                # ボーナス機能
-│       ├── logical_ops.c     # 論理演算子
-│       └── wildcards.c       # ワイルドカード拡張
-```
-
-### 主要モジュールの責任
-
-1. **Lexer (字句解析)**
-
-   - 入力文字列をトークンに分割
-   - クォート処理、エスケープ文字の処理
-   - 演算子とコマンドの識別
-
-2. **Parser (構文解析)**
-
-   - トークン列から抽象構文木(AST)を構築
-   - 構文エラーの検出
-   - 優先度に基づく演算子解析
-
-3. **Executor (実行エンジン)**
-
-   - AST を走査してコマンドを実行
-   - プロセス管理 (fork/exec)
-   - パイプ・リダイレクトの処理
-
-4. **Utils (ユーティリティ)**
-   - 環境変数の管理
-   - 変数展開とワイルドカード処理
-   - エラー処理とクリーンアップ
-
----
-
-## 🔧 実装のハイライト
-
-### AST ベースの構文解析
-
-Minishell では、入力されたコマンドラインを以下の流れで処理します：
-
-```
-入力文字列 → Lexer → トークン列 → Parser → AST → Executor → 実行
-```
-
-この設計により、複雑なコマンドラインも構造化して処理できます。
+## Architecture & Implementation
 
 ```mermaid
 flowchart LR
-    A["入力行<br/>(readline)"] --> B[Lexer]
-    B -->|トークン列| C[Parser]
+    A["input line<br/>(readline)"] --> B[Lexer]
+    B -->|tokens| C[Parser]
     C -->|AST| D[Expander]
-    D -->|展開済みAST| E[Executor]
-    E -->|終了ステータス $?| A
+    D -->|expanded AST| E[Executor]
+    E -->|exit status $?| A
 ```
 
-> モジュール構成・文法・AST 例・実行モデルの詳細は
-> **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** にまとめています。
+| Layer | Directory | Responsibility |
+| --- | --- | --- |
+| REPL | `src/main.c`, `src/main_utils.c` | Prompt loop, line reading, FD backup/restore |
+| Lexer | `src/lexer/` | String → token list; quote and operator recognition |
+| Parser | `src/parser/` | Tokens → AST via recursive descent; syntax validation |
+| Executor | `src/executor/` | AST traversal; process control, pipes, redirections, builtins, heredoc |
+| Utils | `src/utils/` | Variable expansion, quote removal, environment, globbing, signals, cleanup |
+| Bonus | `src/bonus/` | `&&` / `\|\|` / `;` control operators, `*` glob |
 
-### メモリ管理とエラー処理
+### Grammar and AST
 
-- **厳密なメモリ管理**: 全ての動的メモリを適切に解放
-- **リークフリー**: Valgrind でのメモリリーク 0 を保証
-- **エラーハンドリング**: POSIX 準拠のエラーコードとメッセージ
+Operator precedence is expressed by the nesting of the recursive-descent parser functions
+(lowest precedence first):
 
-### シグナル処理
+```
+logical   := pipeline (('&&' | '||' | ';') pipeline)*
+pipeline  := command ('|' command)*
+command   := (WORD | redirection)*
+redirect  := ('<' | '>' | '>>' | '<<') WORD
+```
+
+`ls -la | grep .c > out.txt` becomes:
+
+```mermaid
+flowchart TD
+    PIPE["NODE_PIPE"] --> L["NODE_COMMAND<br/>args = [ls, -la]"]
+    PIPE --> R["NODE_REDIRECT_OUT<br/>filename = out.txt"]
+    R --> RC["NODE_COMMAND<br/>args = [grep, .c]"]
+```
+
+Syntax validation (`validate_syntax()`) runs before execution and rejects things like
+consecutive pipes, a trailing operator, or a missing redirection target without side effects.
+
+### Core data structures (`includes/minishell.h`)
 
 ```c
-// グローバルシグナル状態管理
-volatile sig_atomic_t g_signal_status = 0;
+typedef struct s_token {        // lexer output (linked list)
+    t_token_type    type;       // WORD / PIPE / REDIRECT_* / AND / OR / ...
+    char            *value;
+    int             quote_type; // QUOTE_NONE / SINGLE / DOUBLE
+    struct s_token  *next;
+} t_token;
 
-// Ctrl+C, Ctrl+\, Ctrl+Dの適切な処理
-void setup_signal_handlers(void);
+typedef struct s_ast_node {     // parser output (binary tree)
+    t_node_type         type;   // COMMAND / PIPE / REDIRECT_* / AND / OR / SUBSHELL
+    char                **args; // argv for a COMMAND node
+    char                *filename; // target file / heredoc delimiter for a REDIRECT node
+    struct s_ast_node   *left;
+    struct s_ast_node   *right;
+} t_ast_node;
+
+typedef struct s_minishell {    // shell-wide state
+    t_env   *env_list;          // environment (linked list)
+    char    **envp;             // array kept in sync for execve(2)
+    int     last_exit_status;   // $?
+    int     stdin_backup;
+    int     stdout_backup;
+} t_minishell;
 ```
 
-### fork/exec モデル
+The environment is kept both as a linked list and as a `char **` array: the list makes
+`export`/`unset` easy to mutate, and the array is what gets rebuilt (`env_to_array()`) and
+handed to `execve(2)`.
 
-外部コマンドの実行は標準的な Unix プロセスモデルに従います：
+### Execution dispatch
 
-```c
-pid_t pid = fork();
-if (pid == 0) {
-    execve(path, args, envp);  // 子プロセスで外部プログラム実行
-} else {
-    waitpid(pid, &status, 0);  // 親プロセスで完了待機
-}
+```mermaid
+flowchart TD
+    A[execute_ast] -->|NODE_PIPE| P[execute_pipeline]
+    A -->|NODE_AND/OR/SEMICOLON| LG[execute_logical_ops]
+    A -->|NODE_REDIRECT_*| RD[execute_redirections]
+    A -->|NODE_COMMAND| C{builtin?}
+    C -->|yes| BI["execute_builtin<br/>(parent process)"]
+    C -->|no| EX["fork + execve<br/>(child process)"]
 ```
 
----
+- **External commands** — `find_command_path()` resolves the binary against `PATH`, then
+  `fork()` → `execve()` → `waitpid()`, feeding the exit status back into `$?`.
+- **Builtins** — run in the *parent* process when there is no pipeline around them, because
+  `cd` / `export` / `unset` / `exit` need to mutate the shell's own state; running them in a
+  forked child would make the change invisible to the parent shell.
+- **Pipelines** — each stage of `cmd1 | cmd2 | ...` is forked, with `dup2(2)` wiring stdin/
+  stdout through a `pipe(2)`; the parent closes its copies of both ends and waits for every
+  child.
+- **Redirections** — `stdin`/`stdout` are saved to `stdin_backup`/`stdout_backup`, replaced via
+  `open` + `dup2`, and restored after the command runs.
+- **Heredoc (`<<`)** — content is read line-by-line from the controlling terminal and written
+  into a `pipe(2)`, whose read end becomes the command's stdin; an unquoted delimiter still
+  expands `$VAR` inside the body, matching bash.
 
-## 🧪 実機デモ
+### Memory and signals
 
-実際に `./minishell` を起動して操作した例です（このリポジトリ上での実行結果）：
+- Tokens and the AST are built and freed once per input line (`free_tokens()`, `free_ast()`);
+  the project is developed against `valgrind --leak-check=full`.
+- File descriptors touched by a redirection are always restored via `restore_std_fds()`.
+- `g_signal_status` is the project's single global (required to stay `volatile sig_atomic_t`
+  and async-signal-safe inside the `SIGINT` handler); everything else lives in `t_minishell`.
 
-```text
-minishell$ echo "minishell demo"
-minishell demo
-minishell$ pwd
-/Users/kizuna/Developer/42/minishell
-minishell$ export GREETING=Hello
-minishell$ echo "$GREETING from $USER"
-Hello from kizuna
-minishell$ ls *.md
-README.md
-minishell$ cat .gitignore | grep -c "/"
-8
+## Build & Usage
+
+### Requirements
+
+- `cc` and GNU `readline` (headers + library).
+- On macOS, the `Makefile` auto-detects a Homebrew `readline` install (`brew --prefix
+  readline`) and adds its include/lib paths; on Linux (the 42 evaluation environment and CI)
+  the system `readline` is used as-is.
+
+### Build
+
+```bash
+make          # mandatory part -> ./minishell
+make bonus    # + logical operators and wildcards -> ./minishell_bonus
+make re       # fclean && all
+make clean    # remove object files
+make fclean   # remove object files and binaries
 ```
 
----
+### Test
 
-## ✨ Engineering Highlights
+```bash
+make test                              # build, then compare ./minishell against bash (26 cases)
+MINISHELL=./minishell_bonus bash test.sh   # run the suite against an arbitrary binary
+valgrind --leak-check=full ./minishell     # manual leak check
+```
 
-- **AST ベースの設計**: トークン列を抽象構文木へ変換し、再帰下降パーサで
-  `&&` / `||` / `|` / リダイレクトの優先度を入れ子の関数呼び出しとして表現。
-  複雑な複合コマンドを統一的に実行できる。
-- **正確なプロセス制御**: `fork` / `execve` / `waitpid` / `pipe` / `dup2` による
-  標準的な Unix プロセスモデル。状態を変える必要のあるビルトイン（`cd`/`export`/
-  `unset`/`exit`）は親プロセスで実行する、という設計判断を明確にしている。
-- **メモリ安全性**: 1 行処理ごとにトークン/AST を生成・破棄し、
-  `valgrind --leak-check=full` でリーク 0。FD もリダイレクト毎に退避・復元する。
-- **bash 互換へのこだわり**: Ctrl+C 後の `$?`=130、複数 heredoc の処理順、
-  未クォート区切りでの変数展開、ambiguous redirect 検出などのエッジケースを
-  bash と突き合わせて実装。
-- **42 Norm 準拠**: 関数 25 行 / ファイル 5 関数 / 引数 4 個などの制約下で、
-  機能を細粒度のファイルに分割し可読性を確保。
-- **クロスプラットフォーム**: Linux（42 評価環境）と macOS（Homebrew readline を
-  Makefile が自動検出）の双方でビルド可能。
+`test.sh` pipes each case's input into both `minishell` and `bash` and diffs stdout. Heredoc is
+excluded from the automated comparison because it reads from the controlling terminal (see
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details) and is instead verified interactively.
 
----
+### Run
 
-## 📚 学習リソース
+```bash
+./minishell
+```
 
-このプロジェクトを理解するために推奨される学習リソース：
+At the `minishell$ ` prompt, input works like an interactive bash session:
 
-### Unix/Linux システムプログラミング
+```bash
+minishell$ ls | grep .c | wc -l
+minishell$ echo "hello $USER" > out.txt
+minishell$ cat << EOF
+> multi-line
+> input
+> EOF
+minishell$ cmd1 && cmd2 || cmd3
+minishell$ echo *.c
+```
 
-- **システムコール**: fork, exec, wait, pipe, dup2
-- **シグナル処理**: signal, sigaction
-- **ファイル操作**: open, read, write, close
+| Builtin | Description | Example |
+| --- | --- | --- |
+| `echo` | Print arguments (`-n` suppresses the trailing newline) | `echo -n "no newline"` |
+| `cd` | Change directory | `cd /path/to/dir` |
+| `pwd` | Print the working directory | `pwd` |
+| `export` | Set/list environment variables | `export VAR=value` |
+| `unset` | Remove an environment variable | `unset VAR` |
+| `env` | List environment variables | `env` |
+| `exit` | Exit the shell | `exit [code]` |
 
-### コンパイラ・インタープリター理論
+## Notes
 
-- **字句解析**: トークナイザーの実装
-- **構文解析**: 再帰下降パーサー、AST 構築
-- **実行エンジン**: Tree-walking インタープリター
+Known differences from bash (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), §8, for the
+source of truth):
 
----
+- Heredoc reads its body from the controlling terminal, so piping an entire script into
+  `minishell`'s stdin (e.g. `printf '... << EOF ...' | minishell`) will not feed the heredoc
+  body; interactive use and `make test` behave as expected.
+- Job control (`fg`/`bg`/full `&` job management) is not implemented.
+- Arithmetic expansion `$(())` and command substitution `$(...)` are out of scope for this
+  project.
+
+Licensed under the [MIT License](LICENSE).
