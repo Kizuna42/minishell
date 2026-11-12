@@ -153,6 +153,7 @@ char			*get_env_value(char *key, t_minishell *shell);
 int				set_env_value(char *key, char *value, t_minishell *shell);
 int				unset_env_value(char *key, t_minishell *shell);
 char			**env_to_array(t_minishell *shell);
+void			refresh_env_array(t_minishell *shell);
 void			free_env(t_env *env);
 char			*expand_variables(char *str, t_minishell *shell);
 char			**expand_args(char **args, t_minishell *shell);
