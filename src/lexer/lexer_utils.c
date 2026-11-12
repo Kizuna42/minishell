@@ -63,13 +63,14 @@ static char	*extract_continuous_word(char *input, int *i)
 
 void	process_token(char *input, int *i, t_token **tokens, int advance)
 {
-	t_token	*token;
-	char	*value;
+	t_token			*token;
+	char			*value;
+	t_token_type	type;
 
 	if (is_operator(input[*i]))
 	{
-		token = create_token(get_operator_type(input + *i, &advance),
-				ft_substr(input, *i, advance));
+		type = get_operator_type(input + *i, &advance);
+		token = create_token(type, ft_substr(input, *i, advance));
 		*i += advance;
 		add_token(tokens, token);
 		return ;

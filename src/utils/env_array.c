@@ -62,3 +62,14 @@ char	**env_to_array(t_minishell *shell)
 	fill_env_array(envp, shell->env_list);
 	return (envp);
 }
+
+void	refresh_env_array(t_minishell *shell)
+{
+	char	**new_envp;
+
+	new_envp = env_to_array(shell);
+	if (!new_envp)
+		return ;
+	free_args(shell->envp);
+	shell->envp = new_envp;
+}

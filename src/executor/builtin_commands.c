@@ -74,6 +74,11 @@ int	builtin_cd(char **args, t_minishell *shell)
 
 	if (args[1] && ft_strncmp(args[1], "-", 1) == 0 && ft_strlen(args[1]) == 1)
 		return (handle_cd_dash(shell));
+	if (args[1] && args[2])
+	{
+		print_error("cd", "too many arguments");
+		return (1);
+	}
 	old_pwd = get_env_value("PWD", shell);
 	if (!args[1])
 		path = get_env_value("HOME", shell);

@@ -57,7 +57,7 @@ flowchart TD
 | Parser | `src/parser/` | トークン列から AST 構築・構文エラー検出 |
 | Executor | `src/executor/` | AST を走査し fork/exec・パイプ・リダイレクト・ビルトインを実行 |
 | Utils | `src/utils/` | 変数展開・クォート除去・環境変数・グロブ・シグナル・解放 |
-| Bonus | `src/bonus/` | `&&` `\|\|` `;` の制御演算子、`*` グロブ拡張 |
+| Bonus | `src/bonus/` | `*` グロブ拡張（制御演算子は `parser/parser_logical.c`・`executor/executor_logical.c`） |
 
 ---
 
@@ -81,7 +81,7 @@ typedef struct s_ast_node {     // 構文解析の出力(二分木)
 
 typedef struct s_minishell {    // シェル全体の状態
     t_env  *env_list;           // 環境変数(連結リスト)
-    char  **envp;               // 起動時に作る execve(2) 用スナップショット
+    char  **envp;               // execve(2) 用配列（exec 直前に再構築）
     int     last_exit_status;   // $? の値
     int     stdin_backup;       // リダイレクト復元用
     int     stdout_backup;
@@ -89,9 +89,8 @@ typedef struct s_minishell {    // シェル全体の状態
 ```
 
 環境変数は「連結リスト (`t_env`)」と「`char **envp` 配列」の二重持ちになっている。
-連結リストは `export`/`unset` と変数展開に使う。一方、`env_to_array()` は初期化時に一度だけ
-呼ばれ、現在の実装では変更後に配列を再構築しない。このため `execve(2)` で起動する外部
-コマンドには起動時の環境スナップショットが渡る（既知の差異は §8 を参照）。
+連結リストは `export`/`unset` と変数展開に使う。`execve(2)` の直前に `refresh_env_array()` が
+連結リストから配列を作り直すため、外部コマンドにも `export`/`unset` の結果が反映される。
 
 ---
 
@@ -101,18 +100,19 @@ typedef struct s_minishell {    // シェル全体の状態
 （上ほど優先度が低い）。
 
 ```text
-control   := pipeline (('&&' | '||' | ';' | '&') control)?
+list      := and_or ((';' | '&') and_or)* (';' | '&')?
+and_or    := pipeline (('&&' | '||') pipeline)*
 pipeline  := command ('|' command)*
 command   := (WORD | redirect)*
 redirect  := ('<' | '>' | '>>' | '<<') WORD
 ```
 
-`&&` / `||` / `;` / `&` は同じ階層で扱われ、右辺を `parse_logical_ops()` で再帰的に
-解析するため右結合になる。これは bash の混在論理チェーンの左結合とは異なる。
+`&&` / `||` は同じ優先度の左結合（ループで左に畳み込む）で、`;` / `&` はそれより弱く結合する。
+bash と同様に `false && echo no || echo yes` は `yes` を出力する。各左辺の実行後に `$?` を更新する。
 
 | 文法規則 | 実装関数 | ファイル |
 | --- | --- | --- |
-| `control`   | `parse_logical_ops()`  | `src/bonus/logical_ops.c` |
+| `list` / `and_or` | `parse_logical_ops()` | `parser/parser_logical.c` |
 | `pipeline`  | `parse_pipeline()`     | `parser/parser.c` |
 | `command`   | `parse_command()`      | `parser/parser_command.c` |
 | `redirect`  | `parse_redirections()` | `parser/parser_redirect.c` |
@@ -226,10 +226,8 @@ extern volatile sig_atomic_t  g_signal_status;   // 唯一許可されるグロ�
   パイプした場合（`printf '... << EOF ...' | minishell`）は本文を取り込めない。
   対話実行・テスト実行では期待どおり動作する。
 - ジョブ制御（`fg`/`bg`/`&` の完全なジョブ管理）は未対応。
-- `&&` / `||` / `;` / `&` は同一階層の右結合で解析されるため、混在チェーンの評価順は
-  bash と異なる場合がある。
-- `export`/`unset` 後も外部コマンドに渡す `envp` は起動時のスナップショットのままで、
-  後から追加・削除した変数は `/usr/bin/env` などの外部コマンドには反映されない。
+- `&` はバックグラウンド実行せず、前景で順次実行する。
+- `2>/dev/null` のような FD 番号付きリダイレクトは未対応。
 - 算術展開 `$(())`・コマンド置換 `$(...)` は対象外（課題スコープ外）。
 
 ---

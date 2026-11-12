@@ -31,7 +31,9 @@ int	check_pipe_syntax(t_token *token)
 		return (0);
 	}
 	if (token->next->type == TOKEN_PIPE || token->next->type == TOKEN_AND
-		|| token->next->type == TOKEN_OR)
+		|| token->next->type == TOKEN_OR
+		|| token->next->type == TOKEN_SEMICOLON
+		|| token->next->type == TOKEN_BACKGROUND)
 	{
 		print_syntax_error(token->next->value);
 		return (0);
@@ -48,7 +50,8 @@ int	check_logical_syntax(t_token *token)
 	}
 	if (token->next->type == TOKEN_PIPE || token->next->type == TOKEN_AND
 		|| token->next->type == TOKEN_OR
-		|| token->next->type == TOKEN_BACKGROUND)
+		|| token->next->type == TOKEN_BACKGROUND
+		|| token->next->type == TOKEN_SEMICOLON)
 	{
 		print_syntax_error(token->next->value);
 		return (0);
@@ -76,7 +79,7 @@ int	validate_syntax(t_token *tokens)
 	if (!tokens)
 		return (1);
 	current = tokens;
-	if (!check_first_token(current))
+	if (!check_first_token(current) || !check_paren_balance(current))
 		return (0);
 	while (current)
 	{

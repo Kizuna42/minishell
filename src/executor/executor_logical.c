@@ -12,39 +12,19 @@
 
 #include "../../includes/minishell.h"
 
-#ifndef BONUS
-
-static int	execute_and_or_ops(t_ast_node *node, t_minishell *shell)
-{
-	int	left_result;
-
-	if (node->type == NODE_AND)
-	{
-		left_result = execute_ast(node->left, shell);
-		if (left_result == 0)
-			return (execute_ast(node->right, shell));
-		return (left_result);
-	}
-	else if (node->type == NODE_OR)
-	{
-		left_result = execute_ast(node->left, shell);
-		if (left_result != 0)
-			return (execute_ast(node->right, shell));
-		return (left_result);
-	}
-	return (1);
-}
-
+/*
+** Runs the left side, publishes its status as $? for the right side,
+** then decides whether the right side runs ('&&' / '||' short-circuit).
+*/
 int	execute_logical_ops(t_ast_node *node, t_minishell *shell)
 {
-	if (node->type == NODE_AND || node->type == NODE_OR)
-		return (execute_and_or_ops(node, shell));
-	else if (node->type == NODE_SEMICOLON || node->type == NODE_BACKGROUND)
-	{
-		execute_ast(node->left, shell);
-		return (execute_ast(node->right, shell));
-	}
-	return (1);
-}
+	int	status;
 
-#endif
+	status = execute_ast(node->left, shell);
+	shell->last_exit_status = status;
+	if (node->type == NODE_AND && status != 0)
+		return (status);
+	if (node->type == NODE_OR && status == 0)
+		return (status);
+	return (execute_ast(node->right, shell));
+}

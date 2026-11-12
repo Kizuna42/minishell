@@ -153,6 +153,7 @@ char			*get_env_value(char *key, t_minishell *shell);
 int				set_env_value(char *key, char *value, t_minishell *shell);
 int				unset_env_value(char *key, t_minishell *shell);
 char			**env_to_array(t_minishell *shell);
+void			refresh_env_array(t_minishell *shell);
 void			free_env(t_env *env);
 char			*expand_variables(char *str, t_minishell *shell);
 char			**expand_args(char **args, t_minishell *shell);
@@ -229,6 +230,8 @@ int				check_first_token(t_token *current);
 int				validate_token_syntax(t_token *current);
 int				check_pipe_syntax(t_token *token);
 int				check_logical_syntax(t_token *token);
+int				check_semicolon_syntax(t_token *token);
+int				check_paren_balance(t_token *token);
 int				check_redirect_syntax(t_token *token);
 int				is_operator_token(t_token_type type);
 void			sort_matches(char **matches, int count);
@@ -241,8 +244,6 @@ int				handle_subshell_signals(pid_t pid);
 
 # ifdef BONUS
 
-t_ast_node		*parse_logical_ops(t_token **tokens);
-int				execute_logical_ops(t_ast_node *node, t_minishell *shell);
 char			**expand_wildcards(char *pattern);
 
 # endif

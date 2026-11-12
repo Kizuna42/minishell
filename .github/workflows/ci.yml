@@ -15,6 +15,11 @@ jobs:
       - name: Install readline
         run: sudo apt-get update && sudo apt-get install -y libreadline-dev
 
+      - name: Norminette
+        run: |
+          pipx install norminette==3.3.60
+          norminette src includes libft
+
       - name: Build (mandatory)
         run: make
 

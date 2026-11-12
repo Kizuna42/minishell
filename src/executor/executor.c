@@ -59,6 +59,7 @@ static int	handle_external_cmd(char **expanded_args, t_minishell *shell)
 		free_args(expanded_args);
 		return (exit_status);
 	}
+	refresh_env_array(shell);
 	exit_status = execute_external_command(path, expanded_args, shell->envp,
 			shell);
 	free(path);

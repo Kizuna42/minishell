@@ -17,7 +17,8 @@ int	is_operator_token(t_token_type type)
 	return (type == TOKEN_PIPE || type == TOKEN_REDIRECT_IN
 		|| type == TOKEN_REDIRECT_OUT || type == TOKEN_REDIRECT_APPEND
 		|| type == TOKEN_REDIRECT_HEREDOC || type == TOKEN_AND
-		|| type == TOKEN_OR || type == TOKEN_BACKGROUND);
+		|| type == TOKEN_OR || type == TOKEN_BACKGROUND
+		|| type == TOKEN_SEMICOLON);
 }
 
 int	is_redirect_token(t_token_type type)

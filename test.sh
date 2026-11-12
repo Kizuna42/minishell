@@ -58,6 +58,24 @@ check() {
     fi
 }
 
+# check_status NAME INPUT : 標準出力と終了ステータスを比較
+# （構文エラーのように、bash が以降の行を実行しないケース向け）
+check_status() {
+    name="$1"; input="$2"
+    ms="$(printf '%s\n' "$input" | "$MINISHELL" 2>/dev/null; echo "status=$?")"
+    bs="$(printf '%s\n' "$input" | "$REF_SHELL" 2>/dev/null; echo "status=$?")"
+    total=$((total + 1))
+    if [ "$ms" = "$bs" ]; then
+        pass=$((pass + 1))
+        printf '  %sPASS%s  %s\n' "$GREEN" "$RST" "$name"
+    else
+        fail=$((fail + 1))
+        printf '  %sFAIL%s  %s\n' "$RED" "$RST" "$name"
+        printf '        minishell: %s\n' "$(printf '%s' "$ms" | tr '\n' '|')"
+        printf '        %-9s: %s\n' "$REF_SHELL" "$(printf '%s' "$bs" | tr '\n' '|')"
+    fi
+}
+
 section() { printf '\n%s== %s ==%s\n' "$YEL" "$1" "$RST"; }
 
 printf 'Target : %s\nRef    : %s\n' "$MINISHELL" "$REF_SHELL"
@@ -103,12 +121,30 @@ check "export+unset"       'export TMPV=set
 unset TMPV
 echo "[$TMPV]"'
 check "exit code value"    'exit 42'
+check "cd too many args"   'cd /tmp
+cd / /tmp
+pwd'
+check "export to child"    'export MS_TEST_VAR=visible
+/usr/bin/env | grep ^MS_TEST_VAR='
+check "unset from child"   'export MS_TEST_VAR=x
+unset MS_TEST_VAR
+/usr/bin/env | grep -c ^MS_TEST_VAR='
 
 section "制御演算子 (bonus)"
 check "and success"        'true && echo ok'
 check "and fail"           'false && echo should_not_print'
 check "or fail"            'false || echo recovered'
 check "semicolon"          'echo first ; echo second'
+check "\$? after ;"        'ls /nonexistent_xyz ; echo $?'
+check "trailing ;"         'echo trailing ;'
+check "and-or left assoc"  'false && echo no || echo yes'
+check "or-and left assoc"  'true || echo no && echo yes'
+check "mixed chain status" 'true && false || false ; echo $?'
+check "subshell list"      '(echo a ; echo b) && echo c'
+check_status "syntax: ; ;"        'echo a ; ; echo b'
+check_status "syntax: | ;"        'echo a | ; echo b'
+check_status "syntax: unclosed (" '(echo a'
+check_status "syntax: stray )"    'echo a )'
 
 section "ワイルドカード (bonus)"
 check "glob txt"           'echo *.txt'
