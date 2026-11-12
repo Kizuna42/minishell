@@ -19,9 +19,9 @@ int	handle_input_redirect(char *filename)
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		if (ft_strchr(filename, '*'))
 		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
 			ft_putstr_fd(filename, STDERR_FILENO);
 			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 		}
@@ -47,6 +47,7 @@ int	handle_output_redirect(char *filename, int append)
 	fd = open(filename, flags, 0644);
 	if (fd == -1)
 	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(filename);
 		return (1);
 	}

@@ -14,7 +14,7 @@
 
 int	handle_directory_error(char *command)
 {
-	print_error(command, "is a directory");
+	print_error(command, "Is a directory");
 	return (126);
 }
 
