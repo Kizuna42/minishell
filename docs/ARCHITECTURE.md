@@ -100,7 +100,7 @@ typedef struct s_minishell {    // シェル全体の状態
 （上ほど優先度が低い）。
 
 ```text
-list      := and_or ((';' | '&') and_or)* (';' | '&')?
+list      := and_or ((';' | '&') and_or)* ';'?   # 末尾の '&' は ')' の直前のみ許可
 and_or    := pipeline (('&&' | '||') pipeline)*
 pipeline  := command ('|' command)*
 command   := (WORD | redirect)*
@@ -226,7 +226,8 @@ extern volatile sig_atomic_t  g_signal_status;   // 唯一許可されるグロ�
   パイプした場合（`printf '... << EOF ...' | minishell`）は本文を取り込めない。
   対話実行・テスト実行では期待どおり動作する。
 - ジョブ制御（`fg`/`bg`/`&` の完全なジョブ管理）は未対応。
-- `&` はバックグラウンド実行せず、前景で順次実行する。
+- `&` はバックグラウンド実行せず、`a & b` は前景で順次実行する。入力末尾の `&`（例: `sleep 1 &`）は
+  構文エラーとして拒否する（バックグラウンド実行は課題の必須要件外）。
 - `2>/dev/null` のような FD 番号付きリダイレクトは未対応。
 - 算術展開 `$(())`・コマンド置換 `$(...)` は対象外（課題スコープ外）。
 

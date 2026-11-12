@@ -126,9 +126,8 @@ cd / /tmp
 pwd'
 check "export to child"    'export MS_TEST_VAR=visible
 /usr/bin/env | grep ^MS_TEST_VAR='
-check "unset from child"   'export MS_TEST_VAR=x
-unset MS_TEST_VAR
-/usr/bin/env | grep -c ^MS_TEST_VAR='
+check "unset from child"   'unset HOME
+/usr/bin/env | grep -c ^HOME='
 
 section "制御演算子 (bonus)"
 check "and success"        'true && echo ok'
