@@ -121,8 +121,9 @@ check "export+unset"       'export TMPV=set
 unset TMPV
 echo "[$TMPV]"'
 check "exit code value"    'exit 42'
-check "cd too many args"   'cd / /tmp
-echo $?'
+check "cd too many args"   'cd /tmp
+cd / /tmp
+pwd'
 check "export to child"    'export MS_TEST_VAR=visible
 /usr/bin/env | grep ^MS_TEST_VAR='
 check "unset from child"   'export MS_TEST_VAR=x
