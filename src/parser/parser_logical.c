@@ -71,8 +71,9 @@ static int	is_list_separator(t_token *token)
 
 /*
 ** list : and_or { (';' | '&') and_or } [';' | '&']
-** ';' and '&' bind looser than '&&' / '||'. A trailing separator
-** (at end of input or before ')') is accepted, as in bash.
+** ';' and '&' bind looser than '&&' / '||'. A trailing ';' is accepted
+** as in bash; a trailing '&' is rejected by validate_syntax unless it
+** is followed by ')'.
 */
 t_ast_node	*parse_logical_ops(t_token **tokens)
 {

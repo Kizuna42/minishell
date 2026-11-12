@@ -50,7 +50,8 @@ standard POSIX primitives (`fork`, `execve`, `pipe`, `dup2`, `waitpid`).
   child processes so signals reach the running command.
 - **Bonus: control operators** — `&&`, `||`, `;`, and `&` with bash precedence: `&&`/`||` are
   left-associative and short-circuit, `;`/`&` bind looser, and `$?` is updated between commands.
-  `&` runs commands sequentially (no job control).
+  `&` between commands runs them sequentially (no job control); a trailing `&` at the end of
+  input is a syntax error.
 - **Bonus: wildcards** — `*` glob expansion for unquoted words.
 
 ## Architecture & Implementation
@@ -79,7 +80,7 @@ Operator precedence is expressed by the nesting of the recursive-descent parser 
 (lowest precedence first):
 
 ```text
-list      := and_or ((';' | '&') and_or)* (';' | '&')?
+list      := and_or ((';' | '&') and_or)* ';'?   # trailing '&' only allowed before ')'
 and_or    := pipeline (('&&' | '||') pipeline)*
 pipeline  := command ('|' command)*
 command   := (WORD | redirect)*
@@ -234,7 +235,9 @@ minishell$ echo *.c
 Known differences from bash (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), §8, for more
 implementation context):
 
-- `&` does not start a background job; the command runs in the foreground (no job control).
+- `&` does not start a background job: `a & b` runs `a` then `b` in the foreground, and a
+  trailing `&` at the end of input (e.g. `sleep 1 &`) is rejected as a syntax error
+  (background execution is outside the subject's requirements).
 - File-descriptor-numbered redirections such as `2>/dev/null` are not supported.
 
 - Heredoc reads its body from the controlling terminal, so piping an entire script into
