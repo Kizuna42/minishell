@@ -241,8 +241,6 @@ int				handle_subshell_signals(pid_t pid);
 
 # ifdef BONUS
 
-t_ast_node		*parse_logical_ops(t_token **tokens);
-int				execute_logical_ops(t_ast_node *node, t_minishell *shell);
 char			**expand_wildcards(char *pattern);
 
 # endif

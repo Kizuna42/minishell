@@ -100,7 +100,6 @@ SRCS = $(SRCDIR)/main.c \
 
 # Bonus source files
 BONUS_SRCS = $(SRCS) \
-			$(SRCDIR)/bonus/logical_ops.c \
 			$(SRCDIR)/bonus/wildcards.c
 
 # Object files

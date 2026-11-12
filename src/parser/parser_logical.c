@@ -12,49 +12,91 @@
 
 #include "../../includes/minishell.h"
 
-#ifndef BONUS
-
-static t_ast_node	*create_logical_node(t_ast_node *left, t_token **tokens)
+static t_ast_node	*new_list_node(t_ast_node *left, t_token **tokens)
 {
-	t_ast_node	*logical_node;
+	t_ast_node	*node;
+	t_node_type	type;
 
 	if ((*tokens)->type == TOKEN_AND)
-		logical_node = create_ast_node(NODE_AND);
+		type = NODE_AND;
 	else if ((*tokens)->type == TOKEN_OR)
-		logical_node = create_ast_node(NODE_OR);
+		type = NODE_OR;
 	else if ((*tokens)->type == TOKEN_SEMICOLON)
-		logical_node = create_ast_node(NODE_SEMICOLON);
+		type = NODE_SEMICOLON;
 	else
-		logical_node = create_ast_node(NODE_BACKGROUND);
-	if (!logical_node)
+		type = NODE_BACKGROUND;
+	node = create_ast_node(type);
+	if (!node)
 	{
 		free_ast(left);
 		return (NULL);
 	}
-	logical_node->left = left;
+	node->left = left;
 	*tokens = (*tokens)->next;
-	logical_node->right = parse_logical_ops(tokens);
-	if (!logical_node->right)
-	{
-		free_ast(logical_node);
-		return (NULL);
-	}
-	return (logical_node);
+	return (node);
 }
 
-t_ast_node	*parse_logical_ops(t_token **tokens)
+/*
+** and_or : pipeline { ('&&' | '||') pipeline }
+** Left-associative with equal precedence, as in bash.
+*/
+static t_ast_node	*parse_and_or(t_token **tokens)
 {
 	t_ast_node	*left;
+	t_ast_node	*node;
 
 	left = parse_pipeline(tokens);
-	if (!left)
-		return (NULL);
-	if (*tokens && ((*tokens)->type == TOKEN_AND
-			|| (*tokens)->type == TOKEN_OR
-			|| (*tokens)->type == TOKEN_SEMICOLON
-			|| (*tokens)->type == TOKEN_BACKGROUND))
-		return (create_logical_node(left, tokens));
+	while (left && *tokens && ((*tokens)->type == TOKEN_AND
+			|| (*tokens)->type == TOKEN_OR))
+	{
+		node = new_list_node(left, tokens);
+		if (!node)
+			return (NULL);
+		node->right = parse_pipeline(tokens);
+		if (!node->right)
+		{
+			free_ast(node);
+			return (NULL);
+		}
+		left = node;
+	}
 	return (left);
 }
 
-#endif
+static int	is_list_separator(t_token *token)
+{
+	return (token && (token->type == TOKEN_SEMICOLON
+			|| token->type == TOKEN_BACKGROUND));
+}
+
+/*
+** list : and_or { (';' | '&') and_or } [';' | '&']
+** ';' and '&' bind looser than '&&' / '||'. A trailing separator
+** (at end of input or before ')') is accepted, as in bash.
+*/
+t_ast_node	*parse_logical_ops(t_token **tokens)
+{
+	t_ast_node	*left;
+	t_ast_node	*node;
+
+	left = parse_and_or(tokens);
+	while (left && is_list_separator(*tokens))
+	{
+		if (!(*tokens)->next || (*tokens)->next->type == TOKEN_RPAREN)
+		{
+			*tokens = (*tokens)->next;
+			return (left);
+		}
+		node = new_list_node(left, tokens);
+		if (!node)
+			return (NULL);
+		node->right = parse_and_or(tokens);
+		if (!node->right)
+		{
+			free_ast(node);
+			return (NULL);
+		}
+		left = node;
+	}
+	return (left);
+}
