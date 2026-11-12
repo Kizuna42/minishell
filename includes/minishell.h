@@ -229,6 +229,8 @@ int				check_first_token(t_token *current);
 int				validate_token_syntax(t_token *current);
 int				check_pipe_syntax(t_token *token);
 int				check_logical_syntax(t_token *token);
+int				check_semicolon_syntax(t_token *token);
+int				check_paren_balance(t_token *token);
 int				check_redirect_syntax(t_token *token);
 int				is_operator_token(t_token_type type);
 void			sort_matches(char **matches, int count);
