@@ -33,7 +33,7 @@ standard POSIX primitives (`fork`, `execve`, `pipe`, `dup2`, `waitpid`).
 - CI (`.github/workflows/ci.yml`) builds the mandatory and bonus targets and runs the test
   suite on every push/PR to `main`.
 - The behavioural test suite (`test.sh`, run via `make test`) compares `minishell` output
-  against real `bash` for 26 cases covering command execution, pipes, redirections, variable
+  against real `bash` for 39 cases covering command execution, pipes, redirections, variable
   expansion, builtins, and the bonus logical/wildcard operators.
 
 ## Features
@@ -48,8 +48,9 @@ standard POSIX primitives (`fork`, `execve`, `pipe`, `dup2`, `waitpid`).
 - **Signal handling** — `Ctrl-C` resets the prompt and sets `$?` to 130 (bash-compatible),
   `Ctrl-\` is ignored while interactive, and both are restored to default behaviour inside
   child processes so signals reach the running command.
-- **Bonus: control operators** — `&&`, `||`, `;`, and `&`. A single `&&` or `||` short-circuits;
-  mixed logical chains have a documented associativity difference from `bash` (see [Notes](#notes)).
+- **Bonus: control operators** — `&&`, `||`, `;`, and `&` with bash precedence: `&&`/`||` are
+  left-associative and short-circuit, `;`/`&` bind looser, and `$?` is updated between commands.
+  `&` runs commands sequentially (no job control).
 - **Bonus: wildcards** — `*` glob expansion for unquoted words.
 
 ## Architecture & Implementation
@@ -70,7 +71,7 @@ flowchart LR
 | Parser | `src/parser/` | Tokens → AST via recursive descent; syntax validation |
 | Executor | `src/executor/` | AST traversal; process control, pipes, redirections, builtins, heredoc |
 | Utils | `src/utils/` | Variable expansion, quote removal, environment, globbing, signals, cleanup |
-| Bonus | `src/bonus/` | `&&` / `\|\|` / `;` control operators, `*` glob |
+| Bonus | `src/bonus/` | `*` glob (control operators live in `src/parser/parser_logical.c` / `src/executor/executor_logical.c`) |
 
 ### Grammar and AST
 
@@ -78,14 +79,15 @@ Operator precedence is expressed by the nesting of the recursive-descent parser 
 (lowest precedence first):
 
 ```text
-control   := pipeline (('&&' | '||' | ';' | '&') control)?
+list      := and_or ((';' | '&') and_or)* (';' | '&')?
+and_or    := pipeline (('&&' | '||') pipeline)*
 pipeline  := command ('|' command)*
 command   := (WORD | redirect)*
 redirect  := ('<' | '>' | '>>' | '<<') WORD
 ```
 
-All four control operators share one parser level. The right operand recurses into `control`,
-so chains are right-associative in the current implementation.
+`&&` and `||` share one level and are parsed left-associatively in a loop, so
+`false && echo no || echo yes` prints `yes` as in bash. `;` and `&` bind looser than both.
 
 `ls -la | grep .c > out.txt` becomes:
 
@@ -119,7 +121,7 @@ typedef struct s_ast_node {     // parser output (binary tree)
 
 typedef struct s_minishell {    // shell-wide state
     t_env   *env_list;          // environment (linked list)
-    char    **envp;             // startup snapshot passed to execve(2)
+    char    **envp;             // array passed to execve(2), rebuilt before each exec
     int     last_exit_status;   // $?
     int     stdin_backup;
     int     stdout_backup;
@@ -127,9 +129,8 @@ typedef struct s_minishell {    // shell-wide state
 ```
 
 The environment is kept both as a linked list and as a `char **` array. Builtins and variable
-expansion read the mutable list. `env_to_array()` creates the array at startup, but the current
-implementation does not rebuild it after `export`/`unset`; external commands therefore receive
-the startup environment snapshot (see [Notes](#notes)).
+expansion read the mutable list, and `refresh_env_array()` rebuilds the array from it right before
+each `execve(2)`, so external commands see variables added or removed with `export`/`unset`.
 
 ### Execution dispatch
 
@@ -188,7 +189,7 @@ make fclean   # remove object files and binaries
 ### Test
 
 ```bash
-make test                              # build, then compare ./minishell against bash (26 cases)
+make test                              # build, then compare ./minishell against bash (39 cases)
 MINISHELL=./minishell_bonus bash test.sh   # run the suite against an arbitrary binary
 valgrind --leak-check=full ./minishell     # manual leak check
 ```
@@ -233,12 +234,8 @@ minishell$ echo *.c
 Known differences from bash (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), §8, for more
 implementation context):
 
-- `&&`, `||`, `;`, and `&` share one parser level and are right-associative. Mixed chains such
-  as `false && echo no || echo yes` can therefore differ from `bash`; use separate commands
-  when left-to-right shell semantics matter.
-- `export`/`unset` update the shell's linked-list environment used by builtins and expansion,
-  but the `execve(2)` array remains the startup snapshot. An external command such as
-  `/usr/bin/env` does not observe those later mutations.
+- `&` does not start a background job; the command runs in the foreground (no job control).
+- File-descriptor-numbered redirections such as `2>/dev/null` are not supported.
 
 - Heredoc reads its body from the controlling terminal, so piping an entire script into
   `minishell`'s stdin (e.g. `printf '... << EOF ...' | minishell`) will not feed the heredoc
